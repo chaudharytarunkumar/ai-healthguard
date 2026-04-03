@@ -1,9 +1,0 @@
-[build]
-builder = "nixpacks"
-# Nixpacks automatically installs 'requirements.txt' and 'package.json' dependencies.
-# We just tell it to build the React frontend here.
-buildCommand = "npm run build"
-
-[deploy]
-# Railway passes the $PORT variable automatically.
-startCommand = "uvicorn backend.main:app --host 0.0.0.0 --port $PORT"
