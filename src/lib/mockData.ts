@@ -11,20 +11,20 @@ export const featureFields = [
   { name: "oldpeak", label: "ST Depression (Oldpeak)", type: "number" as const, min: 0, max: 7, step: 0.1, unit: "", tooltip: "ST depression by exercise relative to rest" },
   { name: "slope", label: "Slope of Peak ST Segment", type: "select" as const, options: [{ value: "0", label: "Upsloping" }, { value: "1", label: "Flat" }, { value: "2", label: "Downsloping" }], tooltip: "Downsloping associated with ischaemia" },
   { name: "ca", label: "Major Vessels Colored", type: "select" as const, options: [{ value: "0", label: "0" }, { value: "1", label: "1" }, { value: "2", label: "2" }, { value: "3", label: "3" }], tooltip: "By fluoroscopy; higher = more CAD" },
-  { name: "thal", label: "Thalassemia", type: "select" as const, options: [{ value: "0", label: "Normal" }, { value: "1", label: "Fixed Defect" }, { value: "2", label: "Reversible Defect" }], tooltip: "Thallium stress test result" },
+  { name: "thal", label: "Thalassemia", type: "select" as const, options: [{ value: "3", label: "Normal" }, { value: "6", label: "Fixed Defect" }, { value: "7", label: "Reversible Defect" }], tooltip: "Thallium stress test result" },
 ];
 
 export const samplePatient: Record<string, string> = {
   age: "52", sex: "1", cp: "4", trestbps: "140", chol: "266",
   fbs: "0", restecg: "1", thalach: "134", exang: "1",
-  oldpeak: "2.4", slope: "1", ca: "2", thal: "2",
+  oldpeak: "2.4", slope: "1", ca: "2", thal: "7",
 };
 
 export const mockShapValues = [
   { feature: "oldpeak", value: 2.4, shap: 0.28, direction: "risk" as const },
   { feature: "cp", value: 4, shap: 0.22, direction: "risk" as const },
   { feature: "ca", value: 2, shap: 0.19, direction: "risk" as const },
-  { feature: "thal", value: 2, shap: 0.15, direction: "risk" as const },
+  { feature: "thal", value: 7, shap: 0.15, direction: "risk" as const },
   { feature: "chol", value: 266, shap: 0.12, direction: "risk" as const },
   { feature: "exang", value: 1, shap: 0.10, direction: "risk" as const },
   { feature: "age", value: 52, shap: 0.08, direction: "risk" as const },

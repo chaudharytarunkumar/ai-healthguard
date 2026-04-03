@@ -34,7 +34,10 @@ def get_shap_explainer(model_name="xgb", X_background=None):
                 
         # Use KernelExplainer for others, requires background dataset
         if model_name == 'nn':
-            explainer = shap.KernelExplainer(model.predict, X_background)
+            # Wrapper to ensure NN predict returns 1D array for SHAP
+            def nn_predict_wrapper(x):
+                return model.predict(x).flatten()
+            explainer = shap.KernelExplainer(nn_predict_wrapper, X_background)
         else:
             explainer = shap.KernelExplainer(model.predict_proba, X_background)
     return explainer

@@ -83,8 +83,17 @@ def apply_preprocessing_and_smote(X_train, y_train):
 def preprocess_for_inference(X_raw):
     """
     Applies the saved scaler and selects SF-2 features for inference.
+    Includes safety imputation for missing values.
     """
     X_sf2 = X_raw[SF_2_FEATURES].copy()
+    
+    # Safety Imputation (Ensures no NaNs reach the scaler/model)
+    for col in SF_2_FEATURES:
+        if col in NUMERICAL_FEATURES:
+            X_sf2[col] = X_sf2[col].fillna(X_sf2[col].median() if not X_sf2[col].isna().all() else 0)
+        else:
+            X_sf2[col] = X_sf2[col].fillna(X_sf2[col].mode()[0] if not X_sf2[col].isna().all() else 0)
+
     scaler = joblib.load(os.path.join(os.path.dirname(__file__), '..', 'models', 'scaler.pkl'))
     
     num_sf2 = [f for f in NUMERICAL_FEATURES if f in SF_2_FEATURES]

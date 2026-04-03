@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RiskGauge } from "@/components/RiskGauge";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, ScatterChart, Scatter, ZAxis } from "recharts";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Tooltip as ShadcnTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Results() {
   const location = useLocation();
@@ -216,14 +216,14 @@ export default function Results() {
                         SHAP Feature Impact
                     </h3>
                     <TooltipProvider>
-                        <Tooltip>
+                        <ShadcnTooltip>
                             <TooltipTrigger asChild>
                                 <Info className="h-4 w-4 text-muted-foreground cursor-help" />
                             </TooltipTrigger>
                             <TooltipContent>
                                 <p className="max-w-xs text-xs">SHAP (SHapley Additive exPlanations) shows how much each health parameter moved your risk score from the average baseline.</p>
                             </TooltipContent>
-                        </Tooltip>
+                        </ShadcnTooltip>
                     </TooltipProvider>
                 </div>
                 <ResponsiveContainer width="100%" height={400}>
