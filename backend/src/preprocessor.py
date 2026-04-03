@@ -94,7 +94,15 @@ def preprocess_for_inference(X_raw):
         else:
             X_sf2[col] = X_sf2[col].fillna(X_sf2[col].mode()[0] if not X_sf2[col].isna().all() else 0)
 
-    scaler = joblib.load(os.path.join(os.path.dirname(__file__), '..', 'models', 'scaler.pkl'))
+    scaler_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'scaler.pkl')
+    if os.path.exists(scaler_path):
+        scaler = joblib.load(scaler_path)
+    else:
+        print("WARNING: scaler.pkl not found. Using Identity Scaler for Demo Mode.")
+        # Create a dummy scaler that does nothing
+        class DummyScaler:
+            def transform(self, X): return X
+        scaler = DummyScaler()
     
     num_sf2 = [f for f in NUMERICAL_FEATURES if f in SF_2_FEATURES]
     X_sf2[num_sf2] = scaler.transform(X_sf2[num_sf2])
