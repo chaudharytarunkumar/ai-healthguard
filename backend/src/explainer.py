@@ -4,8 +4,23 @@ import numpy as np
 import os
 from .model_trainer import load_model
 
+class MockExplainer:
+    def __init__(self, model):
+        self.model = model
+        self.expected_value = 0.45
+    def shap_values(self, X):
+        # Generate some dummy SHAP values that roughly correspond to features
+        # Return as a list containing a single array to match Recharts expectations
+        return [np.random.normal(0, 0.1, X.shape[1])]
+
 def get_shap_explainer(model_name="xgb", X_background=None):
     model = load_model(model_name)
+    
+    # Check if we are in DEMO MODE
+    from .model_trainer import MockModel
+    if isinstance(model, MockModel):
+        return MockExplainer(model)
+        
     if model_name in ['rf', 'xgb']:
         explainer = shap.TreeExplainer(model)
     else:

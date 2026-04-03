@@ -26,6 +26,8 @@ dist-ssr
 backend/venv/
 __pycache__/
 *.pyc
-*.pkl
-*.keras
-models/
+
+# Note: Keeping ML artifacts in repo for production deployment
+# !models/
+# !*.pkl
+# !*.keras

@@ -7,6 +7,7 @@ from sklearn.svm import SVC
 from tensorflow.keras.models import Sequential # type: ignore
 from tensorflow.keras.layers import Dense, Dropout # type: ignore
 import numpy as np
+import pandas as pd
 
 def build_nn_model(input_dim):
     from tensorflow.keras.models import Sequential
@@ -54,12 +55,34 @@ def train_and_save_models(X_train, y_train):
     nn.fit(X_train, y_train, epochs=100, batch_size=16, verbose=0)
     nn.save(os.path.join(models_dir, 'nn.keras'))
     
+    # 6. Save background dataset for SHAP
+    print("Saving background dataset for SHAP...")
+    bg_df = pd.DataFrame(X_train, columns=X_train.columns if hasattr(X_train, 'columns') else None)
+    bg_df.sample(min(50, len(bg_df)), random_state=42).to_csv(os.path.join(models_dir, 'background.csv'), index=False)
+    
     print("All models trained and saved successfully.")
     
+class MockModel:
+    """Fallback model for Demo Mode when real models aren't trained yet."""
+    def __init__(self, name):
+        self.name = name
+    def predict_proba(self, X):
+        # Generate a deterministic but variable probability based on input data
+        val = (np.sum(X.values) % 100) / 100.0
+        return np.array([[1-val, val]])
+    def predict(self, X):
+        return (np.sum(X.values) % 100) > 50
+
 def load_model(model_name="xgb"):
     models_dir = os.path.join(os.path.dirname(__file__), '..', 'models')
+    model_path = os.path.join(models_dir, 'nn.keras' if model_name == "nn" else f'{model_name}.pkl')
+    
+    if not os.path.exists(model_path):
+        print(f"WARNING: Model {model_name} not found at {model_path}. Starting in DEMO MODE.")
+        return MockModel(model_name)
+        
     if model_name == "nn":
         from tensorflow.keras.models import load_model as keras_load_model
-        return keras_load_model(os.path.join(models_dir, 'nn.keras'))
+        return keras_load_model(model_path)
     else:
-        return joblib.load(os.path.join(models_dir, f'{model_name}.pkl'))
+        return joblib.load(model_path)
