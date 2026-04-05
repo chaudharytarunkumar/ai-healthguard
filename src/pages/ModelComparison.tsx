@@ -18,7 +18,7 @@ export default function ModelComparison() {
   });
 
   // Transform backend metrics to component format
-  const displayData = metrics ? Object.entries(metrics).map(([key, val]: [string, any]) => {
+  const displayData = Array.isArray(metrics) ? metrics.map((val: any) => {
     const nameMap: Record<string, string> = {
       XGB: "XGBoost",
       RF: "Random Forest",
@@ -26,15 +26,15 @@ export default function ModelComparison() {
       NN: "Neural Network",
       LR: "Logistic Regression"
     };
+    const modelKey = val.model || "";
     return {
-      model: nameMap[key] || key,
-      accuracy: (val.Accuracy * 100).toFixed(1),
-      auc: val.AUC.toFixed(3),
-      // Use mock values for details not in current metrics.json for visual richness
-      f1: mockData.find(m => m.model === (nameMap[key] || key))?.f1 || (val.Accuracy - 0.02).toFixed(2),
-      precision: mockData.find(m => m.model === (nameMap[key] || key))?.precision || (val.Accuracy * 100 - 1).toFixed(1),
-      recall: mockData.find(m => m.model === (nameMap[key] || key))?.recall || (val.Accuracy * 100 - 0.5).toFixed(1),
-      status: key === "XGB" ? "Primary" : (key === "RF" ? "Backup" : "Evaluated")
+      model: nameMap[modelKey] || modelKey,
+      accuracy: (val.accuracy * 100).toFixed(1),
+      auc: val.auc.toFixed(3),
+      f1: (val.f1_score || 0).toFixed(2),
+      precision: (val.precision * 100).toFixed(1),
+      recall: (val.recall * 100).toFixed(1),
+      status: modelKey === "XGB" ? "Primary" : (modelKey === "RF" ? "Backup" : "Evaluated")
     };
   }).sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy)) : [];
 

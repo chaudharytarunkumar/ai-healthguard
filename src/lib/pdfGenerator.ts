@@ -14,34 +14,42 @@ export async function downloadResultAsPDF(elementId: string, filename: string = 
   }
 
   try {
+    // Add a tiny delay to ensure all animations (e.g., Recharts) are finished
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     // Generate canvas from element
     const canvas = await html2canvas(element, {
-      scale: 2, // Higher resolution
+      scale: 2, // Higher resolution for better quality
       useCORS: true,
       logging: false,
-      backgroundColor: "#ffffff", // Ensure white background for PDF if needed, or null for transparent
+      backgroundColor: null, // Allow the current theme colors to be captured
+      removeContainer: true,
     });
 
     const imgData = canvas.toDataURL("image/png");
     
-    // Calculate PDF dimensions (A4)
+    // A4 dimensions in mm
     const pdf = new jsPDF("p", "mm", "a4");
-    const imgProps = pdf.getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-    // Handle multi-page if content is too long
-    let heightLeft = pdfHeight;
-    let position = 0;
+    const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
+    
+    // Calculate image dimensions to fit page width
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pageWidth;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
 
-    pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    // First page
+    pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
     heightLeft -= pageHeight;
 
-    while (heightLeft >= 0) {
-      position = heightLeft - pdfHeight;
+    // Remaining pages
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeight;
       pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, position, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
     }
 
