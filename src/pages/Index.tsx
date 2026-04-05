@@ -9,7 +9,6 @@ const features = [
   { icon: Brain, title: "AI-Powered Prediction", desc: "Five ML models including XGBoost analyse 13 clinical parameters for accurate IHD risk assessment." },
   { icon: Shield, title: "Explainable AI (SHAP)", desc: "Understand exactly which health factors drive your risk score with transparent SHAP explanations." },
   { icon: Activity, title: "Personalised Prevention", desc: "Receive tailored lifestyle, diet, activity, and medical recommendations based on your profile." },
-  { icon: BarChart3, title: "Model Comparison", desc: "Compare performance of Random Forest, XGBoost, SVM, Neural Network, and Logistic Regression." },
 ];
 
 export default function Index() {
@@ -63,15 +62,10 @@ export default function Index() {
             AiHealth Guard uses state-of-the-art machine learning to assess your Ischemic Heart Disease risk from routine parameters, explained with transparent AI insights.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <Link to="/assess">
+            <Link to="/about">
               <Button size="lg" className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90 gap-2 px-8 text-base font-semibold shadow-lg transition-transform hover:scale-105">
-                Start Risk Assessment
+                Learn More About Project
                 <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-            <Link to="/models">
-              <Button size="lg" variant="outline" className="border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10 gap-2 px-8 text-base transition-colors">
-                View Performance Hub
               </Button>
             </Link>
           </div>
@@ -151,14 +145,14 @@ export default function Index() {
           <div className="absolute top-0 right-0 h-full w-full opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white to-transparent" />
           <img src={logo} alt="AiHealth Guard" className="mx-auto mb-6 h-12 w-12 object-contain animate-float" />
           <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-            Prioritize Your Heart Health
+            A B.Tech Major Project Final Year
           </h2>
           <p className="mx-auto mb-8 max-w-lg text-primary-foreground/80">
-            Early detection of Ischemic Heart Disease significantly improves long-term outcomes. Get your analysis in seconds.
+            Developed to showcase the power of machine learning in early cardiovascular risk detection and explainable healthcare AI.
           </p>
-          <Link to="/assess">
+          <Link to="/about">
             <Button size="lg" className="bg-white text-primary hover:bg-white/90 gap-2 px-10 font-bold text-lg h-14 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl">
-              Launch Assessment <ArrowRight className="h-5 w-5" />
+              Project Documentation <ArrowRight className="h-5 w-5" />
             </Button>
           </Link>
         </div>
@@ -177,7 +171,6 @@ export default function Index() {
             </div>
             <div className="flex gap-4">
                 <Link to="/about" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">About Project</Link>
-                <Link to="/models" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">Model Documentation</Link>
                 <a href="https://github.com/chaudharytarunkumar/aihealthguard" target="_blank" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors hover:underline">GitHub</a>
             </div>
           </div>

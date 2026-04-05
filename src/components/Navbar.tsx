@@ -37,12 +37,6 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
-          <Link to="/assess" className="relative ml-2">
-            <div className="absolute -inset-1 animate-pulse-ring rounded-lg bg-primary/30" />
-            <Button size="sm" className="relative bg-gradient-primary text-primary-foreground hover:opacity-90 shadow-sm border-none">
-              Get Started
-            </Button>
-          </Link>
         </div>
 
         {/* Mobile toggle */}
