@@ -1,8 +1,9 @@
-def generate_recommendations(shap_dict, risk_score):
+def generate_recommendations(shap_dict, risk_score, raw_data=None):
     """
     Generates personalized recommendations based on SHAP feature importances
     and the overall risk score.
     shap_dict format: {"shap_values": [list], "features": {dict}}
+    raw_data: Optional dictionary of original patient clinical values.
     """
     recommendations = {
         "lifestyle": [],
@@ -16,7 +17,6 @@ def generate_recommendations(shap_dict, risk_score):
     from .preprocessor import SF_2_FEATURES
     
     shap_values = shap_dict["shap_values"]
-    feature_vals = shap_dict["features"]
     
     # Sort features by SHAP value (descending to find top risk increasers)
     shap_pairs = list(zip(SF_2_FEATURES, shap_values))
@@ -24,11 +24,14 @@ def generate_recommendations(shap_dict, risk_score):
     
     top_risk_factors = [f[0] for f in shap_pairs if f[1] > 0][:3]
     
-    if "chol" in top_risk_factors and feature_vals.get("chol", 0) > 200:
+    # Use raw_data if available for threshold checks (more accurate than scaled values)
+    ref_vals = raw_data if raw_data is not None else shap_dict["features"]
+    
+    if "chol" in top_risk_factors and float(ref_vals.get("chol", 0)) > 200:
         recommendations["diet"].append("Reduce intake of saturated fats and trans fats to lower cholesterol.")
         recommendations["medical"].append("Consider discussing lipid-lowering medication (like statins) with your doctor.")
         
-    if "trestbps" in top_risk_factors and feature_vals.get("trestbps", 0) > 130:
+    if "trestbps" in top_risk_factors and float(ref_vals.get("trestbps", 0)) > 130:
         recommendations["lifestyle"].append("Monitor your blood pressure daily.")
         recommendations["diet"].append("Adopt a low-sodium line diet (DASH diet) to help control blood pressure.")
         

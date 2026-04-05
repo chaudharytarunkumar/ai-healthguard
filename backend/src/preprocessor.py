@@ -8,6 +8,7 @@ from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 import joblib
 import os
+import json
 
 NUMERICAL_FEATURES = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
 CATEGORICAL_FEATURES = ['cp', 'restecg', 'slope', 'thal']
@@ -57,13 +58,24 @@ def apply_preprocessing_and_smote(X_train, y_train):
     # 1. Feature Selection (SF-2)
     X_train_sf2 = X_train[SF_2_FEATURES].copy()
     
-    # 2. Imputation
-    # We will manually impute here just to keep the dataframe format for model training (useful for SHAP)
+    # 2. Imputation & Statistics Saving
+    # We manually impute here and save the stats for consistent inference
+    impute_stats = {}
     for col in SF_2_FEATURES:
         if col in NUMERICAL_FEATURES:
-            X_train_sf2[col] = X_train_sf2[col].fillna(X_train_sf2[col].median())
+            fill_val = X_train_sf2[col].median()
+            X_train_sf2[col] = X_train_sf2[col].fillna(fill_val)
+            impute_stats[col] = float(fill_val)
         else:
-            X_train_sf2[col] = X_train_sf2[col].fillna(X_train_sf2[col].mode()[0])
+            fill_val = X_train_sf2[col].mode()[0]
+            X_train_sf2[col] = X_train_sf2[col].fillna(fill_val)
+            impute_stats[col] = int(fill_val)
+            
+    # Save the stats for inference
+    models_dir = os.path.join(os.path.dirname(__file__), '..', 'models')
+    os.makedirs(models_dir, exist_ok=True)
+    with open(os.path.join(models_dir, 'impute_stats.json'), 'w') as f:
+        json.dump(impute_stats, f)
             
     # 3. Scaling
     scaler = StandardScaler()
@@ -82,29 +94,49 @@ def apply_preprocessing_and_smote(X_train, y_train):
 
 def preprocess_for_inference(X_raw):
     """
-    Applies the saved scaler and selects SF-2 features for inference.
-    Includes safety imputation for missing values.
+    Applies the saved scaler and selects SF_2_FEATURES for inference.
+    Includes safety imputation for missing values using training-set statistics.
     """
-    X_sf2 = X_raw[SF_2_FEATURES].copy()
-    
-    # Safety Imputation (Ensures no NaNs reach the scaler/model)
+    # 1. Feature Selection (SF-2)
+    # Ensure all required features are present, fill with NaN if missing to allow imputation
+    X_sf2 = pd.DataFrame(index=X_raw.index)
     for col in SF_2_FEATURES:
-        if col in NUMERICAL_FEATURES:
-            X_sf2[col] = X_sf2[col].fillna(X_sf2[col].median() if not X_sf2[col].isna().all() else 0)
+        if col in X_raw.columns:
+            X_sf2[col] = X_raw[col]
         else:
-            X_sf2[col] = X_sf2[col].fillna(X_sf2[col].mode()[0] if not X_sf2[col].isna().all() else 0)
+            X_sf2[col] = np.nan
+    
+    # 2. Safety Imputation using training-set statistics
+    models_dir = os.path.join(os.path.dirname(__file__), '..', 'models')
+    stats_path = os.path.join(models_dir, 'impute_stats.json')
+    
+    if os.path.exists(stats_path):
+        with open(stats_path, 'r') as f:
+            impute_stats = json.load(f)
+    else:
+        print(f"WARNING: {stats_path} not found. Using hardcoded fallbacks.")
+        # Fallback values if stats.json not found (Demo Mode)
+        impute_stats = {
+            'age': 54.0, 'trestbps': 130.0, 'chol': 240.0, 'thalach': 150.0, 'oldpeak': 0.8,
+            'ca': 0, 'thal': 3, 'cp': 1, 'exang': 0, 'slope': 1
+        }
 
-    scaler_path = os.path.join(os.path.dirname(__file__), '..', 'models', 'scaler.pkl')
+    for col in SF_2_FEATURES:
+        fill_val = impute_stats.get(col, 0)
+        X_sf2[col] = X_sf2[col].fillna(fill_val)
+
+    # 3. Scaling
+    scaler_path = os.path.join(models_dir, 'scaler.pkl')
     if os.path.exists(scaler_path):
         scaler = joblib.load(scaler_path)
     else:
         print("WARNING: scaler.pkl not found. Using Identity Scaler for Demo Mode.")
-        # Create a dummy scaler that does nothing
         class DummyScaler:
             def transform(self, X): return X
         scaler = DummyScaler()
     
     num_sf2 = [f for f in NUMERICAL_FEATURES if f in SF_2_FEATURES]
-    X_sf2[num_sf2] = scaler.transform(X_sf2[num_sf2])
+    if hasattr(scaler, 'transform'):
+        X_sf2[num_sf2] = scaler.transform(X_sf2[num_sf2])
     
     return X_sf2

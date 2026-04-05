@@ -9,9 +9,9 @@ class MockExplainer:
         self.model = model
         self.expected_value = 0.45
     def shap_values(self, X):
-        # Generate some dummy SHAP values that roughly correspond to features
-        # Return as a list containing a single array to match Recharts expectations
-        return [np.random.normal(0, 0.1, X.shape[1])]
+        # Return a list of two arrays to match binary classification expectation (0, 1)
+        val = np.random.normal(0, 0.1, X.shape[1])
+        return [-val, val]
 
 def get_shap_explainer(model_name="xgb", X_background=None):
     model = load_model(model_name)
@@ -46,9 +46,12 @@ def get_local_shap_values(model_name, X_instance, X_background=None):
     explainer = get_shap_explainer(model_name, X_background)
     shap_values = explainer.shap_values(X_instance)
     
-    # XGBoost shap_values might be 2D array or list of arrays depending on the version
+    # SHAP values for binary classifiers often return a list [class0, class1] 
+    # or a 3D array (samples, features, classes), or just a 2D array (samples, features).
     if isinstance(shap_values, list):
-        shap_values = shap_values[1] # get positive class
+        # If it's a list with 2 elements, index 1 is the positive class.
+        # If it's a list with 1 element, we take that element.
+        shap_values = shap_values[1] if len(shap_values) > 1 else shap_values[0]
         
     # Get base value
     if isinstance(explainer.expected_value, (list, np.ndarray)):

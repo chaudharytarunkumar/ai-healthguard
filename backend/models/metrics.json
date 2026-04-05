@@ -1,0 +1,92 @@
+[
+    {
+        "model": "LR",
+        "accuracy": 0.8684,
+        "precision": 0.8378,
+        "recall": 0.8857,
+        "f1_score": 0.8611,
+        "auc": 0.931,
+        "confusion_matrix": [
+            [
+                35,
+                6
+            ],
+            [
+                4,
+                31
+            ]
+        ]
+    },
+    {
+        "model": "RF",
+        "accuracy": 0.8553,
+        "precision": 0.8158,
+        "recall": 0.8857,
+        "f1_score": 0.8493,
+        "auc": 0.9338,
+        "confusion_matrix": [
+            [
+                34,
+                7
+            ],
+            [
+                4,
+                31
+            ]
+        ]
+    },
+    {
+        "model": "XGB",
+        "accuracy": 0.8553,
+        "precision": 0.8158,
+        "recall": 0.8857,
+        "f1_score": 0.8493,
+        "auc": 0.9129,
+        "confusion_matrix": [
+            [
+                34,
+                7
+            ],
+            [
+                4,
+                31
+            ]
+        ]
+    },
+    {
+        "model": "SVM",
+        "accuracy": 0.8026,
+        "precision": 0.7632,
+        "recall": 0.8286,
+        "f1_score": 0.7945,
+        "auc": 0.9066,
+        "confusion_matrix": [
+            [
+                32,
+                9
+            ],
+            [
+                6,
+                29
+            ]
+        ]
+    },
+    {
+        "model": "NN",
+        "accuracy": 0.8158,
+        "precision": 0.7692,
+        "recall": 0.8571,
+        "f1_score": 0.8108,
+        "auc": 0.8578,
+        "confusion_matrix": [
+            [
+                32,
+                9
+            ],
+            [
+                5,
+                30
+            ]
+        ]
+    }
+]
