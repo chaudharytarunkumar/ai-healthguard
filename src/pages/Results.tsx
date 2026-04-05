@@ -1,16 +1,40 @@
 import { useLocation, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, ArrowLeft, AlertTriangle, Download, Stethoscope, Apple, Dumbbell, Pill, Info, Layers, Beaker, Activity, Sparkles } from "lucide-react";
+import { Heart, ArrowLeft, AlertTriangle, Download, Stethoscope, Apple, Dumbbell, Pill, Info, Layers, Beaker, Activity, Sparkles, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RiskGauge } from "@/components/RiskGauge";
 import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell, ScatterChart, Scatter, ZAxis } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip as ShadcnTooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useState } from "react";
+import { downloadResultAsPDF } from "@/lib/pdfGenerator";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Results() {
   const location = useLocation();
   const patientData = location.state?.patientData as Record<string, string> | undefined;
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const { toast } = useToast();
+
+  const handleDownloadPDF = async () => {
+    try {
+      setIsGeneratingPDF(true);
+      await downloadResultAsPDF("report-content", `AiHealthGuard_Report_${Math.random().toString(36).substring(7).toUpperCase()}.pdf`);
+      toast({
+        title: "Report Downloaded",
+        description: "Your health risk assessment has been saved as a PDF.",
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "There was an error generating your PDF report.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
 
   const { data: apiData, isLoading, error } = useQuery({
     queryKey: ["predict", patientData],
@@ -96,7 +120,7 @@ export default function Results() {
   ];
 
   return (
-    <div className="min-h-screen px-4 py-8 animate-in fade-in duration-700">
+    <div className="min-h-screen px-4 py-8 animate-in fade-in duration-700" id="report-content">
       <div className="mx-auto max-w-5xl">
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -111,8 +135,18 @@ export default function Results() {
             </div>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" className="gap-2 shadow-sm">
-              <Download className="h-4 w-4" /> PDF Report
+            <Button 
+                variant="outline" 
+                className="gap-2 shadow-sm" 
+                onClick={handleDownloadPDF}
+                disabled={isGeneratingPDF}
+            >
+              {isGeneratingPDF ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                  <Download className="h-4 w-4" />
+              )}
+              {isGeneratingPDF ? "Generating..." : "PDF Report"}
             </Button>
             <Link to="/assess">
                 <Button variant="default" className="bg-gradient-primary text-primary-foreground shadow-md gap-2">
