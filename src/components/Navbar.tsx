@@ -6,8 +6,6 @@ import logo from "@/assets/logo.png";
 
 const navItems = [
   { label: "Home", path: "/" },
-  { label: "Risk Assessment", path: "/assess" },
-  { label: "Model Comparison", path: "/models" },
   { label: "About", path: "/about" },
 ];
 
@@ -31,11 +29,10 @@ export function Navbar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                location.pathname === item.path
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${location.pathname === item.path
                   ? "bg-accent text-accent-foreground"
                   : "text-muted-foreground hover:text-foreground"
-              }`}
+                }`}
             >
               {item.label}
             </Link>
@@ -62,11 +59,10 @@ export function Navbar() {
               key={item.path}
               to={item.path}
               onClick={() => setMobileOpen(false)}
-              className={`block rounded-lg px-4 py-2.5 text-sm font-medium ${
-                location.pathname === item.path
+              className={`block rounded-lg px-4 py-2.5 text-sm font-medium ${location.pathname === item.path
                   ? "bg-accent text-accent-foreground"
                   : "text-muted-foreground"
-              }`}
+                }`}
             >
               {item.label}
             </Link>
