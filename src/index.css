@@ -119,4 +119,19 @@
   .animate-pulse-ring {
     animation: pulse-ring 2s ease-in-out infinite;
   }
+
+  /* PDF Generation Helpers */
+  .hidden-report-container {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 1024px; /* Fixed width for consistent PDF scaling */
+    z-index: -100;
+  }
+
+  .break-before-page {
+    /* Hint for potential print/pdf engines, though html2canvas doesn't use it directly, 
+       it's good for semantic structure and if we ever switch to native print */
+    page-break-before: always;
+  }
 }

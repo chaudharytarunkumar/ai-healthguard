@@ -19,11 +19,11 @@ export async function downloadResultAsPDF(elementId: string, filename: string = 
 
     // Generate canvas from element
     const canvas = await html2canvas(element, {
-      scale: 2, // Higher resolution for better quality
+      scale: 3, // Premium quality scaling
       useCORS: true,
       logging: false,
-      backgroundColor: null, // Allow the current theme colors to be captured
-      removeContainer: true,
+      backgroundColor: "#ffffff", // Force white background for clean prints
+      windowWidth: 1200, // Ensure charts have enough space to render full width
     });
 
     const imgData = canvas.toDataURL("image/png");

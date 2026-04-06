@@ -11,6 +11,257 @@ import { useState } from "react";
 import { downloadResultAsPDF } from "@/lib/pdfGenerator";
 import { useToast } from "@/hooks/use-toast";
 
+// --- Sub-components for Report Sections ---
+
+function SummarySection({ riskScore, isHighRisk }: { riskScore: number, isHighRisk: boolean }) {
+  return (
+    <div className="grid gap-8 lg:grid-cols-2">
+      <div className="flex flex-col items-center rounded-3xl border bg-card p-10 shadow-card">
+        <h2 className="mb-6 text-xl font-bold flex items-center gap-2">
+            <Activity className="h-5 w-5 text-primary" />
+            Overall Risk Score
+        </h2>
+        <div className="relative group transition-transform duration-500 hover:scale-105">
+            <RiskGauge score={riskScore} />
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-background border shadow-sm text-xs font-bold text-primary">
+                XGBoost 2.0.3
+            </div>
+        </div>
+        <p className="mt-10 text-center text-sm text-muted-foreground leading-relaxed max-w-xs">
+            This score represents the statistical probability of Ischemic Heart Disease presence based on your clinical inputs.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-6">
+        <div className="rounded-3xl border bg-card p-8 shadow-card">
+          <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
+              <Layers className="h-5 w-5 text-primary" />
+              Classification Tiers
+          </h3>
+          <div className="space-y-4">
+            {[
+              { range: "0–40", label: "Low Risk", color: "bg-risk-low", active: riskScore <= 40 },
+              { range: "41–70", label: "Moderate Risk", color: "bg-risk-moderate", active: riskScore > 40 && riskScore <= 70 },
+              { range: "71–100", label: "High Risk", color: "bg-risk-high", active: riskScore > 70 },
+            ].map((r) => (
+              <div key={r.label} className={`flex items-center gap-4 rounded-2xl border p-4 transition-all duration-300 ${r.active ? "border-primary bg-accent/30 shadow-sm" : "opacity-40 grayscale"}`}>
+                <div className={`h-4 w-4 rounded-full ${r.color} shadow-sm`} />
+                <div>
+                    <p className="font-bold">{r.range} <span className="text-xs font-normal text-muted-foreground ml-2">Score Units</span></p>
+                    <p className="text-sm font-medium opacity-80">{r.label}</p>
+                </div>
+                {r.active && <Badge className="ml-auto bg-primary text-primary-foreground">Active Case</Badge>}
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="rounded-3xl border bg-gradient-to-br from-primary/5 to-secondary/5 p-8 shadow-card border-primary/10">
+            <div className="flex items-center justify-between mb-2">
+                <p className="text-sm font-bold flex items-center gap-2 text-primary">
+                    <Sparkles className="h-4 w-4" /> Prediction Logic
+                </p>
+                <span className="text-xs font-mono text-primary/70">{riskScore}%</span>
+            </div>
+            <div className="h-4 overflow-hidden rounded-full bg-muted border border-primary/5 p-0.5">
+              <div className="h-full rounded-full bg-gradient-primary transition-all duration-1000" style={{ width: `${riskScore}%` }} />
+            </div>
+            <p className="mt-4 text-xs text-muted-foreground italic">
+                Calculated via gradient boosted decision trees focused on minimizing LogLoss in medical diagnostic spaces.
+            </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ExplainSection({ shapData, riskScore }: { shapData: any[], riskScore: number }) {
+  return (
+    <div className="grid gap-8 lg:grid-cols-2">
+      <div className="rounded-3xl border bg-card p-8 shadow-card h-full">
+        <div className="flex items-center justify-between mb-8">
+            <h3 className="font-bold text-lg flex items-center gap-2">
+                <Info className="h-5 w-5 text-primary" />
+                SHAP Feature Impact
+            </h3>
+            <TooltipProvider>
+                <ShadcnTooltip>
+                    <TooltipTrigger asChild>
+                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </TooltipTrigger>
+                    <TooltipContent>
+                        <p className="max-w-xs text-xs">SHAP (SHapley Additive exPlanations) shows how much each health parameter moved your risk score from the average baseline.</p>
+                    </TooltipContent>
+                </ShadcnTooltip>
+            </TooltipProvider>
+        </div>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={shapData} layout="vertical" margin={{ left: 80, right: 20 }}>
+            <XAxis type="number" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+            <YAxis dataKey="feature" type="category" tick={{ fontSize: 11, fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} width={75} />
+            <RechartsTooltip 
+                cursor={{ fill: 'hsl(var(--accent)/0.3)' }}
+                contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-elevated)', padding: '12px' }}
+                formatter={(v: number) => [v.toFixed(4), "SHAP Magnitude"]}
+            />
+            <Bar dataKey="shap" radius={[0, 8, 8, 0]}>
+              {shapData.map((entry, i) => (
+                <Cell key={i} fill={entry.shap >= 0 ? "hsl(var(--destructive))" : "hsl(var(--primary))"} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+        <div className="mt-8 flex items-center justify-center gap-6 text-xs font-bold text-muted-foreground">
+          <span className="flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive rounded-full border border-destructive/20"><span className="h-2 w-2 rounded-full bg-destructive" /> Increases Risk</span>
+          <span className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full border border-primary/20"><span className="h-2 w-2 rounded-full bg-primary" /> Decreases Risk</span>
+        </div>
+      </div>
+
+      <div className="rounded-3xl border bg-card p-8 shadow-card flex flex-col">
+        <h3 className="mb-6 font-bold text-lg">AI Clinical Summary</h3>
+        <div className="space-y-4 flex-1">
+          {shapData.filter((s) => s.direction === "risk").slice(0, 3).map((s, i) => (
+            <div key={i} className="group relative rounded-2xl border bg-muted/40 p-5 hover:bg-muted/60 transition-colors">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-black uppercase text-destructive tracking-widest">Driver #{i + 1}</p>
+                <Badge variant="outline" className="text-[10px] uppercase font-bold bg-background">Strong Correlation</Badge>
+              </div>
+              <p className="text-sm font-bold capitalize">{s.feature.replace(/_/g, ' ')}</p>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                Your input value was flagged by the model. This factor is pushing your health profile into the {riskScore > 50 ? 'IHD positive' : 'moderate risk'} segment by a factor of <strong>+{s.shap.toFixed(3)}</strong>.
+              </p>
+            </div>
+          ))}
+          {shapData.filter((s) => s.direction === "protective").slice(0, 1).map((s, i) => (
+            <div key={i} className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
+              <div className="flex items-center justify-between mb-1">
+                <p className="text-xs font-black uppercase text-primary tracking-widest">Protective Assets</p>
+                <Sparkles className="h-3 w-3 text-primary" />
+              </div>
+              <p className="text-sm font-bold capitalize">{s.feature.replace(/_/g, ' ')}</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Excellent! Your {s.feature} status is significantly buffering your risk profile, lowering your score by <strong>{Math.abs(s.shap).toFixed(3)}</strong> units.
+              </p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 p-4 rounded-xl border border-dashed text-xs text-muted-foreground">
+            Note: SHAP values represent localized additive feature importance for your unique profile only.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PreventionSection({ categoryIcons }: { categoryIcons: any[] }) {
+  return (
+    <div className="grid gap-6 sm:grid-cols-2">
+      {categoryIcons.map((cat, idx) => (
+        <div key={cat.key} className="group rounded-3xl border bg-card p-8 shadow-card transition-all hover:shadow-elevated hover:border-primary/20">
+          <div className="mb-6 flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent group-hover:bg-primary group-hover:text-primary-foreground transition-all">
+              <cat.icon className="h-6 w-6" />
+            </div>
+            <h3 className="font-bold text-lg">{cat.label}</h3>
+          </div>
+          <ul className="space-y-4">
+            {cat.items.length > 0 ? cat.items.map((item: string, i: number) => (
+              <li key={i} className="flex gap-3 text-sm text-muted-foreground leading-relaxed">
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-sm shadow-primary/20" />
+                {item}
+              </li>
+            )) : (
+              <li className="flex gap-2 text-sm text-muted-foreground italic">Generating specific recommendations...</li>
+            )}
+          </ul>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DetailsSection({ patientData }: { patientData: Record<string, string> }) {
+  return (
+    <div className="rounded-3xl border bg-card p-10 shadow-card">
+      <div className="flex items-center gap-2 mb-8">
+          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
+          <h3 className="font-bold text-xl uppercase tracking-tight">Patient Clinical Metadata</h3>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Object.entries(patientData).map(([key, value]) => (
+          <div key={key} className="flex items-center justify-between rounded-2xl bg-muted/30 px-6 py-4 border border-transparent hover:border-muted-foreground/10 transition-colors">
+            <span className="text-xs font-black uppercase text-muted-foreground tracking-widest">{key.replace(/_/g, ' ')}</span>
+            <Badge variant="secondary" className="font-mono px-3 py-1 rounded-lg bg-background border">{value}</Badge>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function GlobalSection({ riskScore }: { riskScore: number }) {
+  return (
+    <div className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 rounded-3xl border bg-card p-8 shadow-card">
+            <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
+                <Beaker className="h-5 w-5 text-primary" />
+                Dataset Distribution Matrix
+            </h3>
+            <p className="text-sm text-muted-foreground mb-8">Visualization of the UCI Cleveland target distribution (Cleveland Clinical Data) used to calibrate this model's baseline.</p>
+            
+            <div className="flex items-center justify-center h-80 bg-muted/40 rounded-3xl border border-dashed p-8">
+                  <ResponsiveContainer width="100%" height="100%">
+                      <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                        <XAxis type="number" dataKey="x" name="Age" unit="y" tick={{fontSize: 10}} />
+                        <YAxis type="number" dataKey="y" name="Risk" unit="%" tick={{fontSize: 10}} />
+                        <ZAxis type="number" range={[50, 400]} />
+                        <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
+                        <Scatter name="Patients" data={[
+                            { x: 52, y: riskScore, z: 200, fill: 'hsl(var(--primary))' },
+                            { x: 30, y: 10, z: 100, fill: 'gray', opacity: 0.2 },
+                            { x: 45, y: 35, z: 150, fill: 'gray', opacity: 0.2 },
+                            { x: 65, y: 85, z: 180, fill: 'gray', opacity: 0.2 },
+                            { x: 58, y: 45, z: 120, fill: 'gray', opacity: 0.2 },
+                            { x: 41, y: 22, z: 100, fill: 'gray', opacity: 0.2 },
+                            { x: 70, y: 92, z: 210, fill: 'gray', opacity: 0.2 },
+                        ]} fill="hsl(var(--primary))" />
+                      </ScatterChart>
+                  </ResponsiveContainer>
+            </div>
+        </div>
+        
+        <div className="flex flex-col gap-6">
+            <div className="rounded-3xl border bg-gradient-to-tr from-card to-background p-8 shadow-card flex-1">
+                <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mb-2">Population Data</p>
+                <h4 className="text-2xl font-bold mb-4">Patient Profile Context</h4>
+                <div className="space-y-4">
+                    <div className="flex justify-between items-center text-sm border-b pb-2">
+                        <span className="text-muted-foreground">Prevalence in Training</span>
+                        <span className="font-bold">46.1%</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm border-b pb-2">
+                        <span className="text-muted-foreground">Mean Patient Age</span>
+                        <span className="font-bold">54.4 yrs</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                        <span className="text-muted-foreground">Data Diversity Score</span>
+                        <span className="font-bold text-success">High (UCI Standard)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div className="rounded-3xl border bg-primary p-8 shadow-card text-primary-foreground">
+                <p className="text-[10px] font-bold uppercase opacity-60 tracking-[0.2em] mb-2">Technical Note</p>
+                <h4 className="text-xl font-bold mb-3">Model Bias Handling</h4>
+                <p className="text-xs leading-relaxed opacity-90">
+                    We used SMOTE oversampling to ensure the model doesn't biasedly predict "No Risk" for edge cases. Accuracy reflects balanced cross-validation.
+                </p>
+            </div>
+        </div>
+      </div>
+  );
+}
+
 export default function Results() {
   const location = useLocation();
   const patientData = location.state?.patientData as Record<string, string> | undefined;
@@ -20,10 +271,11 @@ export default function Results() {
   const handleDownloadPDF = async () => {
     try {
       setIsGeneratingPDF(true);
-      await downloadResultAsPDF("report-content", `AiHealthGuard_Report_${Math.random().toString(36).substring(7).toUpperCase()}.pdf`);
+      // Target the hidden full report instead of the tabbed view
+      await downloadResultAsPDF("report-content-full", `AiHealthGuard_Report_${Math.random().toString(36).substring(7).toUpperCase()}.pdf`);
       toast({
-        title: "Report Downloaded",
-        description: "Your health risk assessment has been saved as a PDF.",
+        title: "Full Report Downloaded",
+        description: "Your health risk assessment with all sections has been saved.",
       });
     } catch (error) {
       toast({
@@ -182,244 +434,98 @@ export default function Results() {
           </TabsList>
 
           <TabsContent value="risk" className="mt-0 focus-visible:outline-none">
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div className="flex flex-col items-center rounded-3xl border bg-card p-10 shadow-card">
-                <h2 className="mb-6 text-xl font-bold flex items-center gap-2">
-                    <Activity className="h-5 w-5 text-primary" />
-                    Overall Risk Score
-                </h2>
-                <div className="relative group transition-transform duration-500 hover:scale-105">
-                    <RiskGauge score={riskScore} />
-                    <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-background border shadow-sm text-xs font-bold text-primary">
-                        XGBoost 2.0.3
-                    </div>
-                </div>
-                <p className="mt-10 text-center text-sm text-muted-foreground leading-relaxed max-w-xs">
-                    This score represents the statistical probability of Ischemic Heart Disease presence based on your clinical inputs.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-6">
-                <div className="rounded-3xl border bg-card p-8 shadow-card">
-                  <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
-                      <Layers className="h-5 w-5 text-primary" />
-                      Classification Tiers
-                  </h3>
-                  <div className="space-y-4">
-                    {[
-                      { range: "0–40", label: "Low Risk", color: "bg-risk-low", active: riskScore <= 40 },
-                      { range: "41–70", label: "Moderate Risk", color: "bg-risk-moderate", active: riskScore > 40 && riskScore <= 70 },
-                      { range: "71–100", label: "High Risk", color: "bg-risk-high", active: riskScore > 70 },
-                    ].map((r) => (
-                      <div key={r.label} className={`flex items-center gap-4 rounded-2xl border p-4 transition-all duration-300 ${r.active ? "border-primary bg-accent/30 shadow-sm" : "opacity-40 grayscale"}`}>
-                        <div className={`h-4 w-4 rounded-full ${r.color} shadow-sm`} />
-                        <div>
-                            <p className="font-bold">{r.range} <span className="text-xs font-normal text-muted-foreground ml-2">Score Units</span></p>
-                            <p className="text-sm font-medium opacity-80">{r.label}</p>
-                        </div>
-                        {r.active && <Badge className="ml-auto bg-primary text-primary-foreground">Active Case</Badge>}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="rounded-3xl border bg-gradient-to-br from-primary/5 to-secondary/5 p-8 shadow-card border-primary/10">
-                    <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-bold flex items-center gap-2 text-primary">
-                            <Sparkles className="h-4 w-4" /> Prediction Logic
-                        </p>
-                        <span className="text-xs font-mono text-primary/70">{riskScore}%</span>
-                    </div>
-                    <div className="h-4 overflow-hidden rounded-full bg-muted border border-primary/5 p-0.5">
-                      <div className="h-full rounded-full bg-gradient-primary transition-all duration-1000" style={{ width: `${riskScore}%` }} />
-                    </div>
-                    <p className="mt-4 text-xs text-muted-foreground italic">
-                        Calculated via gradient boosted decision trees focused on minimizing LogLoss in medical diagnostic spaces.
-                    </p>
-                </div>
-              </div>
-            </div>
+            <SummarySection riskScore={riskScore} isHighRisk={isHighRisk} />
           </TabsContent>
 
           <TabsContent value="explain" className="mt-0 focus-visible:outline-none">
-            <div className="grid gap-8 lg:grid-cols-2">
-              <div className="rounded-3xl border bg-card p-8 shadow-card h-full">
-                <div className="flex items-center justify-between mb-8">
-                    <h3 className="font-bold text-lg flex items-center gap-2">
-                        <Info className="h-5 w-5 text-primary" />
-                        SHAP Feature Impact
-                    </h3>
-                    <TooltipProvider>
-                        <ShadcnTooltip>
-                            <TooltipTrigger asChild>
-                                <Info className="h-4 w-4 text-muted-foreground cursor-help" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p className="max-w-xs text-xs">SHAP (SHapley Additive exPlanations) shows how much each health parameter moved your risk score from the average baseline.</p>
-                            </TooltipContent>
-                        </ShadcnTooltip>
-                    </TooltipProvider>
-                </div>
-                <ResponsiveContainer width="100%" height={400}>
-                  <BarChart data={shapData} layout="vertical" margin={{ left: 80, right: 20 }}>
-                    <XAxis type="number" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                    <YAxis dataKey="feature" type="category" tick={{ fontSize: 11, fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} width={75} />
-                    <RechartsTooltip 
-                        cursor={{ fill: 'hsl(var(--accent)/0.3)' }}
-                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-elevated)', padding: '12px' }}
-                        formatter={(v: number) => [v.toFixed(4), "SHAP Magnitude"]}
-                    />
-                    <Bar dataKey="shap" radius={[0, 8, 8, 0]}>
-                      {shapData.map((entry, i) => (
-                        <Cell key={i} fill={entry.shap >= 0 ? "hsl(var(--destructive))" : "hsl(var(--primary))"} />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-                <div className="mt-8 flex items-center justify-center gap-6 text-xs font-bold text-muted-foreground">
-                  <span className="flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive rounded-full border border-destructive/20"><span className="h-2 w-2 rounded-full bg-destructive" /> Increases Risk</span>
-                  <span className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full border border-primary/20"><span className="h-2 w-2 rounded-full bg-primary" /> Decreases Risk</span>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border bg-card p-8 shadow-card flex flex-col">
-                <h3 className="mb-6 font-bold text-lg">AI Clinical Summary</h3>
-                <div className="space-y-4 flex-1">
-                  {shapData.filter((s) => s.direction === "risk").slice(0, 3).map((s, i) => (
-                    <div key={i} className="group relative rounded-2xl border bg-muted/40 p-5 hover:bg-muted/60 transition-colors">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-xs font-black uppercase text-destructive tracking-widest">Driver #{i + 1}</p>
-                        <Badge variant="outline" className="text-[10px] uppercase font-bold bg-background">Strong Correlation</Badge>
-                      </div>
-                      <p className="text-sm font-bold capitalize">{s.feature.replace(/_/g, ' ')}</p>
-                      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                        Your input value was flagged by the model. This factor is pushing your health profile into the {riskScore > 50 ? 'IHD positive' : 'moderate risk'} segment by a factor of <strong>+{s.shap.toFixed(3)}</strong>.
-                      </p>
-                    </div>
-                  ))}
-                  {shapData.filter((s) => s.direction === "protective").slice(0, 1).map((s, i) => (
-                    <div key={i} className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
-                      <div className="flex items-center justify-between mb-1">
-                        <p className="text-xs font-black uppercase text-primary tracking-widest">Protective Assets</p>
-                        <Sparkles className="h-3 w-3 text-primary" />
-                      </div>
-                      <p className="text-sm font-bold capitalize">{s.feature.replace(/_/g, ' ')}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">
-                        Excellent! Your {s.feature} status is significantly buffering your risk profile, lowering your score by <strong>{Math.abs(s.shap).toFixed(3)}</strong> units.
-                      </p>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-6 p-4 rounded-xl border border-dashed text-xs text-muted-foreground">
-                    Note: SHAP values represent localized additive feature importance for your unique profile only.
-                </div>
-              </div>
-            </div>
+            <ExplainSection shapData={shapData} riskScore={riskScore} />
           </TabsContent>
 
           <TabsContent value="prevention" className="mt-0 focus-visible:outline-none">
-            <div className="grid gap-6 sm:grid-cols-2">
-              {categoryIcons.map((cat, idx) => (
-                <div key={cat.key} className="group rounded-3xl border bg-card p-8 shadow-card transition-all hover:shadow-elevated hover:border-primary/20 animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: `${idx*100}ms` }}>
-                  <div className="mb-6 flex items-center gap-4">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-                      <cat.icon className="h-6 w-6" />
-                    </div>
-                    <h3 className="font-bold text-lg">{cat.label}</h3>
-                  </div>
-                  <ul className="space-y-4">
-                    {cat.items.length > 0 ? cat.items.map((item: string, i: number) => (
-                      <li key={i} className="flex gap-3 text-sm text-muted-foreground leading-relaxed">
-                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-sm shadow-primary/20" />
-                        {item}
-                      </li>
-                    )) : (
-                      <li className="flex gap-2 text-sm text-muted-foreground italic">Generating specific recommendations...</li>
-                    )}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            <PreventionSection categoryIcons={categoryIcons} />
           </TabsContent>
 
           <TabsContent value="details" className="mt-0 focus-visible:outline-none">
-            <div className="rounded-3xl border bg-card p-10 shadow-card">
-              <div className="flex items-center gap-2 mb-8">
-                  <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                  <h3 className="font-bold text-xl uppercase tracking-tight">Patient Clinical Metadata</h3>
-              </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {Object.entries(patientData).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between rounded-2xl bg-muted/30 px-6 py-4 border border-transparent hover:border-muted-foreground/10 transition-colors">
-                    <span className="text-xs font-black uppercase text-muted-foreground tracking-widest">{key.replace(/_/g, ' ')}</span>
-                    <Badge variant="secondary" className="font-mono px-3 py-1 rounded-lg bg-background border">{value}</Badge>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <DetailsSection patientData={patientData} />
           </TabsContent>
 
           <TabsContent value="global" className="mt-0 focus-visible:outline-none">
-             <div className="grid gap-8 lg:grid-cols-3">
-                <div className="lg:col-span-2 rounded-3xl border bg-card p-8 shadow-card">
-                    <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
-                        <Beaker className="h-5 w-5 text-primary" />
-                        Dataset Distribution Matrix
-                    </h3>
-                    <p className="text-sm text-muted-foreground mb-8">Visualization of the UCI Cleveland target distribution (Cleveland Clinical Data) used to calibrate this model's baseline.</p>
-                    
-                    <div className="flex items-center justify-center h-80 bg-muted/40 rounded-3xl border border-dashed p-8">
-                         <ResponsiveContainer width="100%" height="100%">
-                             <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                                <XAxis type="number" dataKey="x" name="Age" unit="y" tick={{fontSize: 10}} />
-                                <YAxis type="number" dataKey="y" name="Risk" unit="%" tick={{fontSize: 10}} />
-                                <ZAxis type="number" range={[50, 400]} />
-                                <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
-                                <Scatter name="Patients" data={[
-                                    { x: 52, y: riskScore, z: 200, fill: 'hsl(var(--primary))' },
-                                    { x: 30, y: 10, z: 100, fill: 'gray', opacity: 0.2 },
-                                    { x: 45, y: 35, z: 150, fill: 'gray', opacity: 0.2 },
-                                    { x: 65, y: 85, z: 180, fill: 'gray', opacity: 0.2 },
-                                    { x: 58, y: 45, z: 120, fill: 'gray', opacity: 0.2 },
-                                    { x: 41, y: 22, z: 100, fill: 'gray', opacity: 0.2 },
-                                    { x: 70, y: 92, z: 210, fill: 'gray', opacity: 0.2 },
-                                ]} fill="hsl(var(--primary))" />
-                             </ScatterChart>
-                         </ResponsiveContainer>
-                    </div>
-                </div>
-                
-                <div className="flex flex-col gap-6">
-                    <div className="rounded-3xl border bg-gradient-to-tr from-card to-background p-8 shadow-card flex-1">
-                        <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mb-2">Population Data</p>
-                        <h4 className="text-2xl font-bold mb-4">Patient Profile Context</h4>
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center text-sm border-b pb-2">
-                                <span className="text-muted-foreground">Prevalence in Training</span>
-                                <span className="font-bold">46.1%</span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm border-b pb-2">
-                                <span className="text-muted-foreground">Mean Patient Age</span>
-                                <span className="font-bold">54.4 yrs</span>
-                            </div>
-                            <div className="flex justify-between items-center text-sm">
-                                <span className="text-muted-foreground">Data Diversity Score</span>
-                                <span className="font-bold text-success">High (UCI Standard)</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div className="rounded-3xl border bg-primary p-8 shadow-card text-primary-foreground">
-                        <p className="text-[10px] font-bold uppercase opacity-60 tracking-[0.2em] mb-2">Technical Note</p>
-                        <h4 className="text-xl font-bold mb-3">Model Bias Handling</h4>
-                        <p className="text-xs leading-relaxed opacity-90">
-                            We used SMOTE oversampling to ensure the model doesn't biasedly predict "No Risk" for edge cases. Accuracy reflects balanced cross-validation.
-                        </p>
-                    </div>
-                </div>
-             </div>
+            <GlobalSection riskScore={riskScore} />
           </TabsContent>
         </Tabs>
+
+        {/* --- HIDDEN FULL REPORT FOR PDF --- */}
+        <div id="report-content-full" className="hidden-report-container">
+            <div className="p-8 space-y-12 bg-white text-slate-900 ring-1 ring-slate-200 rounded-3xl">
+                {/* PDF Header */}
+                <div className="flex items-center justify-between border-b pb-8">
+                    <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center">
+                            <Heart className="h-7 w-7 text-white" />
+                        </div>
+                        <div>
+                            <h1 className="text-3xl font-black tracking-tight">AiHealth Guard</h1>
+                            <p className="text-sm font-bold text-primary italic uppercase tracking-widest">Medical Diagnostic Report</p>
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <p className="text-sm font-bold">Report Serial: AI-{Math.random().toString(36).substring(7).toUpperCase()}</p>
+                        <p className="text-xs text-muted-foreground">{new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</p>
+                    </div>
+                </div>
+
+                {/* Patient Summary & Risk Info */}
+                <section>
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
+                        1. Risk Analysis Summary
+                    </h2>
+                    <SummarySection riskScore={riskScore} isHighRisk={isHighRisk} />
+                </section>
+
+                {/* Explainability Section */}
+                <section className="break-before-page pt-8">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
+                        2. AI Explainability (SHAP Analysis)
+                    </h2>
+                    <ExplainSection shapData={shapData} riskScore={riskScore} />
+                </section>
+
+                {/* Prevention Section */}
+                <section className="break-before-page pt-8">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
+                        3. Strategic Prevention Plan
+                    </h2>
+                    <PreventionSection categoryIcons={categoryIcons} />
+                </section>
+
+                {/* Clinical Details */}
+                <section className="break-before-page pt-8">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
+                        4. Input Parameters Archive
+                    </h2>
+                    <DetailsSection patientData={patientData} />
+                </section>
+
+                {/* Global Data */}
+                <section className="break-before-page pt-8">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
+                        5. Dataset Correlation Context
+                    </h2>
+                    <GlobalSection riskScore={riskScore} />
+                </section>
+
+                {/* PDF Footer */}
+                <div className="mt-12 pt-8 border-t text-center space-y-2">
+                    <p className="text-xs font-bold text-muted-foreground/60 italic">
+                        The AiHealth Guard diagnostic model is an academic research tool based on the UCI Cleveland dataset. 
+                        This report is generated for educational purposes and should be validated by a licensed cardiologist.
+                    </p>
+                    <p className="text-[10px] text-muted-foreground/40">
+                        &copy; 2026 AiHealth Guard Project. All Rights Reserved.
+                    </p>
+                </div>
+            </div>
+        </div>
       </div>
     </div>
   );
