@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, ArrowLeft, AlertTriangle, Download, Stethoscope, Apple, Dumbbell, Pill, Info, Layers, Beaker, Activity, Sparkles, Loader2 } from "lucide-react";
+import { Heart, ArrowLeft, AlertTriangle, Download, Stethoscope, Apple, Dumbbell, Pill, Info, Layers, Beaker, Activity, Sparkles, Loader2, BarChart3 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RiskGauge } from "@/components/RiskGauge";
@@ -262,6 +262,90 @@ function GlobalSection({ riskScore }: { riskScore: number }) {
   );
 }
 
+function ModelComparisonSection({ modelResults }: { modelResults: Record<string, any> }) {
+  if (!modelResults) return null;
+  
+  const chartData = Object.entries(modelResults).map(([key, value]: [string, any]) => ({
+    name: key.toUpperCase() === 'NN' ? 'Neural Network' : 
+          key.toUpperCase() === 'LR' ? 'Linear Regression' :
+          key.toUpperCase() === 'RF' ? 'Random Forest' :
+          key.toUpperCase() === 'XGB' ? 'XGBoost' : 
+          key.toUpperCase() === 'SVM' ? 'SVM' : key.toUpperCase(),
+    score: value.risk_score,
+    accuracy: (value.accuracy * 100).toFixed(1),
+    level: value.risk_level
+  })).sort((a, b) => b.score - a.score);
+
+  return (
+    <div className="space-y-8">
+      <div className="rounded-3xl border bg-card p-8 shadow-card">
+        <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
+            <BarChart3 className="h-5 w-5 text-primary" />
+            Cross-Model Risk Probability
+        </h3>
+        <div className="h-[400px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 60 }}>
+                    <XAxis 
+                        dataKey="name" 
+                        angle={-45} 
+                        textAnchor="end" 
+                        interval={0} 
+                        height={80}
+                        tick={{fontSize: 12, fontWeight: 600}} 
+                    />
+                    <YAxis domain={[0, 100]} label={{ value: 'Risk Score (%)', angle: -90, position: 'insideLeft' }} />
+                    <RechartsTooltip 
+                        cursor={{fill: 'transparent'}}
+                        content={({ active, payload }) => {
+                            if (active && payload && payload.length) {
+                                const data = payload[0].payload;
+                                return (
+                                    <div className="rounded-2xl border bg-background p-4 shadow-elevated border-primary/20">
+                                        <p className="font-bold text-primary mb-1">{data.name}</p>
+                                        <div className="space-y-1 text-xs">
+                                            <p><span className="text-muted-foreground">Predicted Risk:</span> <span className="font-bold">{data.score}%</span></p>
+                                            <p><span className="text-muted-foreground">Model Accuracy:</span> <span className="font-bold">{data.accuracy}%</span></p>
+                                            <p><span className="text-muted-foreground">Classification:</span> <span className={`font-bold ${data.score > 70 ? 'text-destructive' : data.score > 40 ? 'text-risk-moderate' : 'text-risk-low'}`}>{data.level}</span></p>
+                                        </div>
+                                    </div>
+                                );
+                            }
+                            return null;
+                        }}
+                    />
+                    <Bar dataKey="score" radius={[8, 8, 0, 0]} barSize={50}>
+                        {chartData.map((entry, index) => (
+                            <Cell 
+                                key={`cell-${index}`} 
+                                fill={entry.score > 70 ? 'hsl(var(--destructive))' : entry.score > 40 ? 'hsl(var(--risk-moderate))' : 'hsl(var(--primary))'} 
+                                fillOpacity={0.8}
+                            />
+                        ))}
+                    </Bar>
+                </BarChart>
+            </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {chartData.map((model) => (
+          <div key={model.name} className="rounded-2xl border bg-card p-5 shadow-sm text-center hover:border-primary/50 transition-colors">
+            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-2">{model.name}</p>
+            <p className={`text-2xl font-black ${model.score > 70 ? 'text-destructive' : model.score > 40 ? 'text-risk-moderate' : 'text-primary'}`}>
+                {model.score}%
+            </p>
+            <div className="mt-3 space-y-1">
+                <Badge variant="outline" className="text-[9px] font-bold py-0 h-4 bg-muted/30">Acc: {model.accuracy}%</Badge>
+                <p className="text-[9px] font-medium text-muted-foreground leading-tight uppercase">{model.level}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Results() {
   const location = useLocation();
   const patientData = location.state?.patientData as Record<string, string> | undefined;
@@ -297,10 +381,10 @@ export default function Results() {
         return acc;
       }, {} as Record<string, number>);
       
-      const res = await fetch("/api/predict?model_name=xgb", {
+      const res = await fetch("/api/predict", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(numericData)
+        body: JSON.stringify(numericData),
       });
       if (!res.ok) throw new Error("API prediction request failed");
       return res.json();
@@ -346,24 +430,6 @@ export default function Results() {
     );
   }
 
-  const riskScore = apiData ? Math.round(apiData.risk_score) : 0;
-  const isHighRisk = riskScore > 70;
-
-  const shapData = apiData?.shap ? (() => {
-      const keys = Object.keys(apiData.shap.features);
-      const values = apiData.shap.shap_values;
-      return keys.map((key, i) => {
-          const val = values[i];
-          return {
-              feature: key,
-              shap: val,
-              value: apiData.shap.features[key],
-              direction: val > 0 ? "risk" : "protective",
-              absShap: Math.abs(val)
-          };
-      }).sort((a, b) => b.absShap - a.absShap);
-  })() : [];
-
   const categoryIcons = [
     { key: "lifestyle", label: "Lifestyle Modifications", icon: Stethoscope, items: apiData?.recommendations?.lifestyle || [] },
     { key: "diet", label: "Dietary Guidance", icon: Apple, items: apiData?.recommendations?.diet || [] },
@@ -408,7 +474,7 @@ export default function Results() {
           </div>
         </div>
 
-        {isHighRisk && (
+        {apiData.prediction === 1 && (
           <div className="mb-8 flex items-start gap-4 rounded-2xl border border-destructive/20 bg-destructive/5 p-6 shadow-sm">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
                 <AlertTriangle className="h-6 w-6" />
@@ -422,23 +488,28 @@ export default function Results() {
 
         <Tabs defaultValue="risk" className="space-y-8">
           <TabsList className="flex h-12 items-center justify-start gap-2 bg-transparent p-0 overflow-x-auto no-scrollbar">
-            {["risk", "explain", "prevention", "details", "global"].map((tab) => (
-                <TabsTrigger 
-                    key={tab} 
-                    value={tab} 
-                    className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground h-full px-6 rounded-full border border-border shadow-sm transition-all"
-                >
-                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </TabsTrigger>
-            ))}
+            <TabsTrigger value="risk" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Risk Summary</TabsTrigger>
+            <TabsTrigger value="compare" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Model Comparison</TabsTrigger>
+            <TabsTrigger value="explain" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">AI Explanation</TabsTrigger>
+            <TabsTrigger value="prevention" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Prevention Plan</TabsTrigger>
+            <TabsTrigger value="details" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Clinical Data</TabsTrigger>
+            <TabsTrigger value="global" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Population Context</TabsTrigger>
           </TabsList>
 
           <TabsContent value="risk" className="mt-0 focus-visible:outline-none">
-            <SummarySection riskScore={riskScore} isHighRisk={isHighRisk} />
+            <SummarySection riskScore={apiData.risk_score} isHighRisk={apiData.prediction === 1} />
+          </TabsContent>
+
+          <TabsContent value="compare" className="mt-0 focus-visible:outline-none">
+            <ModelComparisonSection modelResults={apiData.model_results} />
           </TabsContent>
 
           <TabsContent value="explain" className="mt-0 focus-visible:outline-none">
-            <ExplainSection shapData={shapData} riskScore={riskScore} />
+            <ExplainSection shapData={apiData.shap_data || Object.entries(apiData.shap.shap_values).map(([feature, val]) => ({
+              feature: feature,
+              shap: val as number,
+              direction: (val as number) >= 0 ? "risk" : "protective"
+            }))} riskScore={apiData.risk_score} />
           </TabsContent>
 
           <TabsContent value="prevention" className="mt-0 focus-visible:outline-none">
@@ -450,7 +521,7 @@ export default function Results() {
           </TabsContent>
 
           <TabsContent value="global" className="mt-0 focus-visible:outline-none">
-            <GlobalSection riskScore={riskScore} />
+            <GlobalSection riskScore={apiData.risk_score} />
           </TabsContent>
         </Tabs>
 
@@ -479,21 +550,33 @@ export default function Results() {
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
                         1. Risk Analysis Summary
                     </h2>
-                    <SummarySection riskScore={riskScore} isHighRisk={isHighRisk} />
+                    <SummarySection riskScore={apiData.risk_score} isHighRisk={apiData.prediction === 1} />
+                </section>
+
+                {/* Multi-Model Comparison */}
+                <section className="break-before-page pt-8">
+                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
+                        2. Cross-Architecture Decision Matrix
+                    </h2>
+                    <ModelComparisonSection modelResults={apiData.model_results} />
                 </section>
 
                 {/* Explainability Section */}
                 <section className="break-before-page pt-8">
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        2. AI Explainability (SHAP Analysis)
+                        3. AI Explainability (SHAP Analysis)
                     </h2>
-                    <ExplainSection shapData={shapData} riskScore={riskScore} />
+                    <ExplainSection shapData={apiData.shap_data || Object.entries(apiData.shap.shap_values).map(([feature, val]) => ({
+                        feature: feature,
+                        shap: val as number,
+                        direction: (val as number) >= 0 ? "risk" : "protective"
+                    }))} riskScore={apiData.risk_score} />
                 </section>
 
                 {/* Prevention Section */}
                 <section className="break-before-page pt-8">
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        3. Strategic Prevention Plan
+                        4. Strategic Prevention Plan
                     </h2>
                     <PreventionSection categoryIcons={categoryIcons} />
                 </section>
@@ -501,7 +584,7 @@ export default function Results() {
                 {/* Clinical Details */}
                 <section className="break-before-page pt-8">
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        4. Input Parameters Archive
+                        5. Input Parameters Archive
                     </h2>
                     <DetailsSection patientData={patientData} />
                 </section>
@@ -509,9 +592,9 @@ export default function Results() {
                 {/* Global Data */}
                 <section className="break-before-page pt-8">
                     <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        5. Dataset Correlation Context
+                        6. Dataset Correlation Context
                     </h2>
-                    <GlobalSection riskScore={riskScore} />
+                    <GlobalSection riskScore={apiData.risk_score} />
                 </section>
 
                 {/* PDF Footer */}
