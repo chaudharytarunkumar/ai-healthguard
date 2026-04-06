@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Shield, Brain, Activity, ArrowRight, BarChart3, FileText, Users, Sparkles } from "lucide-react";
+import { Shield, Brain, Activity, ArrowRight, BarChart3, FileText, Users, Sparkles, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import logo from "@/assets/logo.png";
@@ -52,7 +52,7 @@ export default function Index() {
             Live Machine Learning Optimization (Accuracy: {xgbAccuracy}%)
           </div>
           <h1 className="mb-6 text-4xl font-extrabold leading-tight tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            Predict Heart Disease Risk
+            Predict Ischemic Heart Disease Risk
             <br />
             <span className="text-gradient-primary bg-clip-text text-transparent bg-white">
               Before It's Too Late
@@ -62,8 +62,14 @@ export default function Index() {
             AiHealth Guard uses state-of-the-art machine learning to assess your Ischemic Heart Disease risk from routine parameters, explained with transparent AI insights.
           </p>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row animate-in fade-in slide-in-from-bottom-4 duration-1000">
-            <Link to="/about">
+            <Link to="/assess">
               <Button size="lg" className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90 gap-2 px-8 text-base font-semibold shadow-lg transition-transform hover:scale-105">
+                Start Risk Assessment
+                <Heart className="h-5 w-5 text-destructive" />
+              </Button>
+            </Link>
+            <Link to="/about">
+              <Button size="lg" variant="outline" className="border-primary-foreground/20 bg-white/10 text-primary-foreground hover:bg-white/20 gap-2 px-8 text-base font-semibold backdrop-blur-sm transition-transform hover:scale-105">
                 Learn More About Project
                 <ArrowRight className="h-5 w-5" />
               </Button>
@@ -106,7 +112,7 @@ export default function Index() {
                 <h3 className="mb-3 text-lg font-bold">{f.title}</h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
                 <div className="absolute bottom-4 right-6 opacity-0 group-hover:opacity-20 transition-opacity">
-                    <f.icon className="h-12 w-12" />
+                  <f.icon className="h-12 w-12" />
                 </div>
               </div>
             ))}
@@ -131,7 +137,7 @@ export default function Index() {
                 <h3 className="mb-3 text-lg font-bold">{s.title}</h3>
                 <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
                 {i < 2 && (
-                    <div className="hidden lg:block absolute top-8 left-[calc(50%+4rem)] w-[calc(100%-8rem)] h-[2px] bg-gradient-to-r from-primary/30 to-transparent" />
+                  <div className="hidden lg:block absolute top-8 left-[calc(50%+4rem)] w-[calc(100%-8rem)] h-[2px] bg-gradient-to-r from-primary/30 to-transparent" />
                 )}
               </div>
             ))}
@@ -170,8 +176,8 @@ export default function Index() {
               </div>
             </div>
             <div className="flex gap-4">
-                <Link to="/about" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">About Project</Link>
-                <a href="https://github.com/chaudharytarunkumar/aihealthguard" target="_blank" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors hover:underline">GitHub</a>
+              <Link to="/about" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">About Project</Link>
+              <a href="https://github.com/chaudharytarunkumar/aihealthguard" target="_blank" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors hover:underline">GitHub</a>
             </div>
           </div>
           <div className="mt-8 border-t pt-8 text-center sm:flex sm:justify-between sm:text-left">

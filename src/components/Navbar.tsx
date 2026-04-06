@@ -6,6 +6,8 @@ import logo from "@/assets/logo.png";
 
 const navItems = [
   { label: "Home", path: "/" },
+  { label: "Risk Assessment", path: "/assess" },
+  { label: "Model Comparison", path: "/models" },
   { label: "About", path: "/about" },
 ];
 
