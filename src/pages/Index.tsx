@@ -156,11 +156,11 @@ export default function Index() {
           <p className="mx-auto mb-8 max-w-lg text-primary-foreground/80">
             Developed to showcase the power of machine learning in early cardiovascular risk detection and explainable healthcare AI.
           </p>
-          <a href="/AIHealthGuard_Project_Report.pdf" target="_blank" rel="noreferrer">
-            <Button size="lg" className="bg-white text-primary hover:bg-white/90 gap-2 px-10 font-bold text-lg h-14 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl">
+          <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 gap-2 px-10 font-bold text-lg h-14 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl">
+            <a href="/AIHealthGuard_Project_Report.pdf" target="_blank" rel="noreferrer">
               Project Documentation <ArrowRight className="h-5 w-5" />
-            </Button>
-          </a>
+            </a>
+          </Button>
         </div>
       </section>
 
