@@ -83,17 +83,38 @@ async def predict_risk(data: PatientData):
 
         # Use XGBoost for primary SHAP and Recommendations (as per plan)
         primary_model = "xgb"
+        
+        # Ensure we have a valid risk_score for recommendations even if primary fails
+        if results.get(primary_model) and "risk_score" in results[primary_model]:
+            primary_risk_score = results[primary_model]["risk_score"]
+            primary_risk_level = results[primary_model]["risk_level"]
+            primary_prediction = results[primary_model]["prediction"]
+        else:
+            # Fallback to the first available successful model or a default
+            successful_models = [m for m in results if "risk_score" in results[m]]
+            if successful_models:
+                first_success = successful_models[0]
+                primary_risk_score = results[first_success]["risk_score"]
+                primary_risk_level = results[first_success]["risk_level"]
+                primary_prediction = results[first_success]["prediction"]
+                print(f"WARNING: Primary model {primary_model} failed. Falling back to {first_success} for summary.")
+            else:
+                primary_risk_score = 0
+                primary_risk_level = "ERROR"
+                primary_prediction = 0
+                print("CRITICAL: All models failed to provide a risk score.")
+
         shap_dict = get_local_shap_values(primary_model, X_processed)
-        recommendations = generate_recommendations(shap_dict, results[primary_model]["risk_score"], raw_data=data.model_dump())
+        recommendations = generate_recommendations(shap_dict, primary_risk_score, raw_data=data.model_dump())
         
         return {
             "model_results": results,
             "primary_model": primary_model,
             "shap": shap_dict,
             "recommendations": recommendations,
-            "risk_score": results[primary_model]["risk_score"],
-            "risk_level": results[primary_model]["risk_level"],
-            "prediction": results[primary_model]["prediction"]
+            "risk_score": primary_risk_score,
+            "risk_level": primary_risk_level,
+            "prediction": primary_prediction
         }
     except Exception as e:
         import traceback
