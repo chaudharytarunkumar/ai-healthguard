@@ -171,12 +171,13 @@ export default function Index() {
             <div className="flex items-center gap-3">
               <img src={logo} alt="" className="h-8 w-8 object-contain" />
               <div>
-                <p className="text-sm font-bold">AiHealth Guard</p>
-                <p className="text-xs text-muted-foreground">B.Tech Major Project Final Report</p>
+                <Link to="/" className="text-sm font-bold hover:text-primary transition-colors">AiHealth Guard</Link>
+                <Link to="/documentation" className="block text-xs text-muted-foreground hover:text-primary transition-colors">B.Tech Major Project Final Report</Link>
               </div>
             </div>
             <div className="flex gap-4">
               <Link to="/about" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">About Project</Link>
+              <Link to="/documentation" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">Documentation</Link>
               <a href="https://github.com/chaudharytarunkumar/aihealthguard" target="_blank" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors hover:underline">GitHub</a>
             </div>
           </div>
