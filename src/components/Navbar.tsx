@@ -1,8 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import logo from "@/assets/logo.png";
+import { motion } from "framer-motion";
 
 const navItems = [
   { label: "Home", path: "/" },
@@ -17,11 +17,14 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <nav className="sticky top-0 z-50 border-b bg-card/80 backdrop-blur-lg">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={logo} alt="AiHealth Guard" className="h-9 w-9 object-contain" />
-          <span className="text-lg font-bold text-foreground">
+    <nav className="glass-header sticky top-0 z-50">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+        <Link to="/" className="flex items-center gap-3 transition-transform hover:scale-105 active:scale-95">
+          <div className="relative">
+            <div className="absolute -inset-2 animate-pulse-ring rounded-full bg-primary/20" />
+            <img src={logo} alt="AiHealth Guard" className="relative h-10 w-10 object-contain" />
+          </div>
+          <span className="text-xl font-black tracking-tight text-foreground">
             AiHealth <span className="text-gradient-primary">Guard</span>
           </span>
         </Link>
@@ -32,39 +35,53 @@ export function Navbar() {
             <Link
               key={item.path}
               to={item.path}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${location.pathname === item.path
-                  ? "bg-accent text-accent-foreground"
+              className={`relative rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${location.pathname === item.path
+                  ? "text-primary"
                   : "text-muted-foreground hover:text-foreground"
                 }`}
             >
-              {item.label}
+              {location.pathname === item.path && (
+                <motion.div
+                  layoutId="nav-active"
+                  className="absolute inset-0 rounded-xl bg-primary/10"
+                  transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                />
+              )}
+              <span className="relative z-10">{item.label}</span>
             </Link>
           ))}
         </div>
 
         {/* Mobile toggle */}
-        <button className="md:hidden" onClick={() => setMobileOpen(!mobileOpen)}>
+        <button 
+          className="rounded-full p-2 transition-colors hover:bg-muted md:hidden" 
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
           {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
       </div>
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="border-t bg-card px-4 py-3 md:hidden">
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="border-t bg-card/95 backdrop-blur-xl px-4 py-4 md:hidden"
+        >
           {navItems.map((item) => (
             <Link
               key={item.path}
               to={item.path}
               onClick={() => setMobileOpen(false)}
-              className={`block rounded-lg px-4 py-2.5 text-sm font-medium ${location.pathname === item.path
-                  ? "bg-accent text-accent-foreground"
+              className={`block rounded-xl px-5 py-3 text-sm font-bold transition-all ${location.pathname === item.path
+                  ? "bg-primary/10 text-primary"
                   : "text-muted-foreground"
                 }`}
             >
               {item.label}
             </Link>
           ))}
-        </div>
+        </motion.div>
       )}
     </nav>
   );

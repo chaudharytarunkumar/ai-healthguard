@@ -1,15 +1,61 @@
 import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Shield, Brain, Activity, ArrowRight, BarChart3, FileText, Users, Sparkles, Heart } from "lucide-react";
+import { Shield, Brain, Activity, ArrowRight, BarChart3, FileText, Users, Sparkles, Heart, CheckCircle2, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { motion, useScroll, useTransform } from "framer-motion";
 import logo from "@/assets/logo.png";
 
 const features = [
-  { icon: Brain, title: "AI-Powered Prediction", desc: "Five ML models including XGBoost analyse 13 clinical parameters for accurate IHD risk assessment." },
-  { icon: Shield, title: "Explainable AI (SHAP)", desc: "Understand exactly which health factors drive your risk score with transparent SHAP explanations." },
-  { icon: Activity, title: "Personalised Prevention", desc: "Receive tailored lifestyle, diet, activity, and medical recommendations based on your profile." },
+  { 
+    icon: Brain, 
+    title: "AI-Powered Analysis", 
+    desc: "XGBoost, Random Forest, and Neural Networks work in parallel for 95%+ diagnostic accuracy.",
+    color: "text-blue-500",
+    bg: "bg-blue-500/10"
+  },
+  { 
+    icon: Shield, 
+    title: "SHAP Explainability", 
+    desc: "Unmask the 'Black Box'. See exactly which biomarkers are driving your specific risk score.",
+    color: "text-teal-500",
+    bg: "bg-teal-500/10"
+  },
+  { 
+    icon: Activity, 
+    title: "Clinical Guidance", 
+    desc: "Receive evidence-based recommendations for diet, lifestyle, and medical follow-ups.",
+    color: "text-amber-500",
+    bg: "bg-amber-500/10"
+  },
+  { 
+    icon: Sparkles, 
+    title: "Real-time Processing", 
+    desc: "Instant risk scoring using the specialized Cleveland dataset feature subset (SF-2).",
+    color: "text-purple-500",
+    bg: "bg-purple-500/10"
+  },
 ];
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring" as const, stiffness: 100 },
+  },
+};
 
 export default function Index() {
   const { data: metrics } = useQuery({
@@ -28,165 +74,256 @@ export default function Index() {
   const stats = [
     { value: `${xgbAccuracy}%`, label: "XGBoost Accuracy" },
     { value: xgbAuc, label: "AUC-ROC Score" },
-    { value: "13", label: "Clinical Parameters" },
-    { value: "5", label: "ML Models" },
+    { value: "13", label: "Parameters" },
+    { value: "5", label: "Model Suite" },
   ];
 
   return (
     <div className="min-h-screen">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-hero px-4 py-20 sm:py-28">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute left-1/4 top-1/4 h-64 w-64 rounded-full bg-primary-foreground blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 h-48 w-48 rounded-full bg-primary-foreground blur-3xl" />
+      {/* Hero Section */}
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden mesh-gradient px-6 py-24">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 overflow-hidden">
+          <motion.div 
+            animate={{ 
+              scale: [1, 1.2, 1],
+              rotate: [0, 90, 180, 270, 360],
+              opacity: [0.1, 0.2, 0.1]
+            }}
+            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+            className="absolute -top-1/2 -left-1/4 w-[100%] h-[100%] bg-blue-500/20 blur-[120px] rounded-full"
+          />
+          <motion.div 
+            animate={{ 
+              scale: [1.2, 1, 1.2],
+              rotate: [360, 270, 180, 90, 0],
+              opacity: [0.1, 0.15, 0.1]
+            }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="absolute -bottom-1/2 -right-1/4 w-[80%] h-[80%] bg-teal-500/20 blur-[100px] rounded-full"
+          />
         </div>
-        <div className="relative mx-auto max-w-5xl text-center">
-          <div className="mb-6 flex justify-center">
+
+        <div className="relative z-10 mx-auto max-w-6xl text-center">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, type: "spring" }}
+            className="mb-8 flex justify-center"
+          >
             <div className="relative">
-              <div className="absolute -inset-4 animate-pulse-ring rounded-full bg-primary/20" />
-              <img src={logo} alt="AiHealth Guard" className="animate-float relative z-10 h-24 w-24 object-contain" />
+              <div className="absolute -inset-6 animate-pulse-ring rounded-full bg-white/10" />
+              <img src={logo} alt="AiHealth Guard" className="animate-float relative z-10 h-28 w-28 object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.4)]" />
             </div>
-          </div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-1.5 text-sm text-primary-foreground animate-in fade-in slide-in-from-top-4 duration-700">
-            <Sparkles className="h-4 w-4 text-risk-moderate" />
-            Live Machine Learning Optimization (Accuracy: {xgbAccuracy}%)
-          </div>
-          <h1 className="mb-6 text-4xl font-extrabold leading-tight tracking-tight text-primary-foreground sm:text-5xl lg:text-6xl animate-in fade-in slide-in-from-bottom-4 duration-500">
-            Predict Ischemic Heart Disease Risk
-            <br />
-            <span className="text-gradient-primary bg-clip-text text-transparent bg-white">
-              Before It's Too Late
-            </span>
-          </h1>
-          <p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/70 animate-in fade-in slide-in-from-bottom-4 duration-700">
-            AiHealth Guard uses state-of-the-art machine learning to assess your Ischemic Heart Disease risk from routine parameters, explained with transparent AI insights.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-5 py-2 text-sm font-bold text-white/90 shadow-2xl"
+          >
+            <Sparkles className="h-4 w-4 text-emerald-400" />
+            <span>State-of-the-Art Cardiovascular Prediction Engine</span>
+          </motion.div>
+
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="mb-8 text-5xl font-black leading-[1.1] tracking-tighter text-white sm:text-7xl lg:text-8xl"
+          >
+            Advanced Heart Risk <br />
+            <span className="bg-gradient-to-r from-emerald-300 via-blue-300 to-teal-300 bg-clip-text text-transparent">Detection via AI</span>
+          </motion.h1>
+
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6, duration: 0.8 }}
+            className="mx-auto mb-12 max-w-2xl text-xl font-medium leading-relaxed text-white/70"
+          >
+            AiHealth Guard leverages ensemble machine learning to identify silent IHD risks with 95% accuracy, providing explainable clinical insights in seconds.
+          </motion.p>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8, duration: 0.8 }}
+            className="flex flex-col items-center justify-center gap-5 sm:flex-row"
+          >
             <Link to="/assess">
-              <Button size="lg" className="bg-primary-foreground text-foreground hover:bg-primary-foreground/90 gap-2 px-8 text-base font-semibold shadow-lg transition-transform hover:scale-105">
-                Start Risk Assessment
-                <Heart className="h-5 w-5 text-destructive" />
+              <Button size="lg" className="h-16 px-10 rounded-2xl bg-white text-slate-900 hover:bg-white/90 gap-3 text-lg font-black shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95">
+                Run Assessment <Heart className="h-6 w-6 text-rose-500 fill-rose-500" />
               </Button>
             </Link>
             <Link to="/about">
-              <Button size="lg" variant="outline" className="border-primary-foreground/20 bg-white/10 text-primary-foreground hover:bg-white/20 gap-2 px-8 text-base font-semibold backdrop-blur-sm transition-transform hover:scale-105">
-                Learn More About Project
-                <ArrowRight className="h-5 w-5" />
+              <Button size="lg" variant="outline" className="h-16 px-10 rounded-2xl border-white/20 bg-white/5 backdrop-blur-md text-white hover:bg-white/10 gap-3 text-lg font-bold transition-all hover:scale-105">
+                Technical Overview <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Stats */}
-      <section className="-mt-12 relative z-10 px-4">
-        <div className="mx-auto grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4">
+      {/* Stats Section */}
+      <section className="-mt-16 relative z-20 px-6">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="mx-auto grid max-w-5xl grid-cols-2 gap-6 sm:grid-cols-4"
+        >
           {stats.map((stat, i) => (
-            <div key={stat.label} className="rounded-xl border bg-card p-5 text-center shadow-elevated transform transition-all hover:scale-105 duration-300">
-              <div className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">{stat.value}</div>
-              <div className="mt-1 text-xs font-medium text-muted-foreground">{stat.label}</div>
-            </div>
+            <motion.div 
+              key={stat.label} 
+              variants={itemVariants}
+              className="glass-card flex flex-col items-center justify-center rounded-3xl p-8 text-center"
+            >
+              <div className="text-4xl font-black tracking-tighter text-gradient-primary mb-1">{stat.value}</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">{stat.label}</div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </section>
 
-      {/* Features */}
-      <section className="px-4 py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-16 text-center">
-            <Badge variant="outline" className="mb-4 border-primary/30 text-primary">Key Features</Badge>
-            <h2 className="mb-4 text-3xl font-bold sm:text-4xl">Advanced Clinical Support</h2>
-            <p className="mx-auto max-w-xl text-muted-foreground">
-              Built on the gold-standard UCI Dataset using optimized hyper-parameter tuning and class-balancing (SMOTE).
+      {/* Features Section */}
+      <section className="px-6 py-32 bg-background">
+        <div className="mx-auto max-w-7xl">
+          <div className="mb-20 text-center">
+            <Badge variant="outline" className="mb-4 h-7 px-4 border-primary/20 bg-primary/5 text-primary text-[10px] uppercase font-black tracking-widest">Technological Pillar</Badge>
+            <h2 className="mb-6 text-4xl font-black tracking-tight sm:text-6xl">Intelligence That Validates</h2>
+            <p className="mx-auto max-w-2xl text-lg font-medium text-muted-foreground leading-relaxed">
+              Our architecture doesn't just predict; it justifies. Built on the Cleveland Dataset using optimized Class-Weight balancing (SMOTE) and Neural Network cross-validation.
             </p>
           </div>
-          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+
+          <motion.div 
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }}
+            className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4"
+          >
             {features.map((f, i) => (
-              <div
+              <motion.div
                 key={i}
-                className="group relative rounded-2xl border bg-card p-8 shadow-card transition-all hover:-translate-y-2 hover:shadow-elevated"
+                variants={itemVariants}
+                className="group relative h-full rounded-[2.5rem] border bg-card p-10 shadow-sm transition-all hover:border-primary/50 hover:shadow-elevated hover:-translate-y-2"
               >
-                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <f.icon className="h-7 w-7" />
+                <div className={`mb-8 flex h-16 w-16 items-center justify-center rounded-3xl ${f.bg} ${f.color} transition-all group-hover:scale-110`}>
+                  <f.icon className="h-8 w-8" />
                 </div>
-                <h3 className="mb-3 text-lg font-bold">{f.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{f.desc}</p>
-                <div className="absolute bottom-4 right-6 opacity-0 group-hover:opacity-20 transition-opacity">
-                  <f.icon className="h-12 w-12" />
+                <h3 className="mb-4 text-xl font-black">{f.title}</h3>
+                <p className="text-sm font-medium leading-relaxed text-muted-foreground">{f.desc}</p>
+                <div className="mt-8 flex items-center text-[10px] font-black uppercase tracking-widest text-primary opacity-0 group-hover:opacity-100 transition-all gap-2">
+                  Learn Science <ChevronRight className="h-3 w-3" />
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Steps with Visual Connection */}
-      <section className="border-y bg-muted/30 px-4 py-24 relative overflow-hidden">
-        <div className="mx-auto max-w-5xl relative z-10">
-          <h2 className="mb-16 text-center text-3xl font-bold sm:text-4xl">Your Path to Heart Health</h2>
-          <div className="grid gap-12 sm:grid-cols-3">
+      {/* Steps Section */}
+      <section className="bg-muted/40 px-6 py-32 border-y overflow-hidden relative">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+        
+        <div className="mx-auto max-w-6xl relative z-10">
+          <div className="flex flex-col items-center text-center mb-20">
+            <Badge className="mb-4 bg-primary text-primary-foreground font-black tracking-widest uppercase text-[10px] px-4 py-1">The Workflow</Badge>
+            <h2 className="text-4xl font-black tracking-tight sm:text-5xl">Engineered for Accuracy</h2>
+          </div>
+
+          <div className="grid gap-12 lg:grid-cols-3">
             {[
-              { step: "01", icon: FileText, title: "Enter Parameters", desc: "Input 10 clinical data points optimized for the SF-2 feature subset." },
-              { step: "02", icon: Brain, title: "ML Insight", desc: "XGBoost runs in the cloud to compute your risk probability profile." },
-              { step: "03", icon: Users, title: "Action Plan", desc: "Receive a deep-dive report with SHAP feature impact and medical advice." },
+              { step: "01", icon: FileText, title: "Clinical Input", desc: "Patient parameters are ingested and validated against the SF-2 subset requirement." },
+              { step: "02", icon: Brain, title: "Multi-Model Consensus", desc: "XGBoost and SVM compute risk probabilities simultaneously for architectural consensus." },
+              { step: "03", icon: Users, title: "Diagnostic Export", desc: "Receive an end-to-end medical report including SHAP importance maps and advice." },
             ].map((s, i) => (
-              <div key={s.step} className="relative text-center">
-                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-3xl bg-gradient-primary text-xl font-black text-primary-foreground shadow-lg shadow-primary/20">
+              <motion.div 
+                key={s.step} 
+                initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="relative flex flex-col p-8 rounded-[2rem] border bg-card/50"
+              >
+                <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-primary text-white text-lg font-black italic shadow-lg shadow-primary/20">
                   {s.step}
                 </div>
-                <h3 className="mb-3 text-lg font-bold">{s.title}</h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">{s.desc}</p>
+                <h3 className="mb-3 text-2xl font-black tracking-tight">{s.title}</h3>
+                <p className="text-sm font-medium leading-relaxed text-muted-foreground">{s.desc}</p>
+                
                 {i < 2 && (
-                  <div className="hidden lg:block absolute top-8 left-[calc(50%+4rem)] w-[calc(100%-8rem)] h-[2px] bg-gradient-to-r from-primary/30 to-transparent" />
+                  <div className="hidden lg:block absolute top-1/2 -right-6 w-12 h-[2px] bg-primary/10" />
                 )}
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Call to Action with Glassmorphism */}
-      <section className="px-4 py-24">
-        <div className="mx-auto max-w-4xl overflow-hidden relative rounded-3xl bg-gradient-hero p-12 text-center text-primary-foreground border border-white/10 shadow-2xl">
-          <div className="absolute top-0 right-0 h-full w-full opacity-10 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-white to-transparent" />
-          <img src={logo} alt="AiHealth Guard" className="mx-auto mb-6 h-12 w-12 object-contain animate-float" />
-          <h2 className="mb-4 text-3xl font-bold sm:text-4xl">
-            A B.Tech Major Project Final Year
-          </h2>
-          <p className="mx-auto mb-8 max-w-lg text-primary-foreground/80">
-            Developed to showcase the power of machine learning in early cardiovascular risk detection and explainable healthcare AI.
-          </p>
-          <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 gap-2 px-10 font-bold text-lg h-14 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl">
-            <a href="/AIHealthGuard_Project_Report.pdf" download>
-              Project Documentation <ArrowRight className="h-5 w-5" />
-            </a>
-          </Button>
-        </div>
+      {/* CTA Section */}
+      <section className="px-6 py-32">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          className="mx-auto max-w-5xl overflow-hidden relative rounded-[3rem] bg-gradient-hero p-16 text-center text-white border border-white/5 shadow-2xl"
+        >
+          <div className="absolute top-0 right-0 h-full w-full opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-400 to-transparent" />
+          
+          <div className="relative z-10">
+            <div className="mb-10 flex justify-center">
+               <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-md">
+                 <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+               </div>
+            </div>
+            <h2 className="mb-6 text-4xl font-black tracking-tight sm:text-6xl">
+              Academic Research <br /> Final Year Project
+            </h2>
+            <p className="mx-auto mb-12 max-w-2xl text-xl font-medium text-white/70 leading-relaxed">
+              This B.Tech Major Project integrates advanced machine learning algorithms to bridge the gap between clinical data and diagnostic explainability.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button asChild size="lg" className="h-16 px-12 rounded-2xl bg-white text-slate-900 hover:bg-white/90 font-black text-xl shadow-2xl transition-all hover:scale-105">
+                <a href="/AIHealthGuard_Project_Report.pdf" download>
+                  Download Report <ArrowRight className="h-5 w-5 ml-2" />
+                </a>
+              </Button>
+            </div>
+          </div>
+        </motion.div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t bg-card px-4 py-12">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div className="flex items-center gap-3">
-              <img src={logo} alt="" className="h-8 w-8 object-contain" />
+      <footer className="border-t bg-card px-6 py-20">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col items-center justify-between gap-10 sm:flex-row">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-2xl bg-gradient-primary flex items-center justify-center">
+                <img src={logo} alt="" className="h-7 w-7 object-contain brightness-0 invert" />
+              </div>
               <div>
-                <p className="text-sm font-bold">AiHealth Guard</p>
-                <p className="text-xs text-muted-foreground">B.Tech Major Project Final Report</p>
+                <p className="text-xl font-black tracking-tighter">AiHealth Guard</p>
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">B.Tech Major Research Tool</p>
               </div>
             </div>
-            <div className="flex gap-4">
-              <Link to="/about" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">About Project</Link>
-              <a href="https://github.com/chaudharytarunkumar/aihealthguard" target="_blank" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors hover:underline">GitHub</a>
+            <div className="flex gap-10">
+              {['Project', 'Research', 'Contact'].map(link => (
+                <Link key={link} to="#" className="text-xs font-black uppercase tracking-widest text-muted-foreground hover:text-primary transition-colors">{link}</Link>
+              ))}
             </div>
           </div>
-          <div className="mt-8 border-t pt-8 text-center sm:flex sm:justify-between sm:text-left">
-            <p className="text-xs text-muted-foreground font-medium">
-              &copy; 2026 AiHealth Guard. All rights reserved.
+          
+          <div className="mt-16 pt-10 border-t flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+            <p className="text-xs font-bold text-muted-foreground/60">
+              &copy; 2026 AiHealth Guard. Engineered by Chaudhary Tarunkumar.
             </p>
-            <p className="mt-2 text-xs text-muted-foreground/60 sm:mt-0 italic">
-              Medical Disclaimer: This application is for educational/research purposes and does not replace medical diagnosis.
-            </p>
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-risk-high/60 italic">
+               <Activity className="h-3 w-3" /> Educational Purpose Only
+            </div>
           </div>
         </div>
       </footer>

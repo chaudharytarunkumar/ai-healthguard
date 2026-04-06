@@ -1,6 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Heart, ArrowLeft, AlertTriangle, Download, Stethoscope, Apple, Dumbbell, Pill, Info, Layers, Beaker, Activity, Sparkles, Loader2, BarChart3 } from "lucide-react";
+import { Heart, ArrowLeft, AlertTriangle, Download, Stethoscope, Apple, Dumbbell, Pill, Info, Layers, Beaker, Activity, Sparkles, Loader2, BarChart3, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RiskGauge } from "@/components/RiskGauge";
@@ -10,33 +10,34 @@ import { Tooltip as ShadcnTooltip, TooltipContent, TooltipProvider, TooltipTrigg
 import { useState } from "react";
 import { downloadResultAsPDF } from "@/lib/pdfGenerator";
 import { useToast } from "@/hooks/use-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 // --- Sub-components for Report Sections ---
 
 function SummarySection({ riskScore, isHighRisk }: { riskScore: number, isHighRisk: boolean }) {
   return (
     <div className="grid gap-8 lg:grid-cols-2">
-      <div className="flex flex-col items-center rounded-3xl border bg-card p-10 shadow-card">
-        <h2 className="mb-6 text-xl font-bold flex items-center gap-2">
-            <Activity className="h-5 w-5 text-primary" />
-            Overall Risk Score
+      <div className="glass-card flex flex-col items-center rounded-[2.5rem] p-10 shadow-elevated">
+        <h2 className="mb-8 text-sm font-black uppercase tracking-[0.2em] text-muted-foreground flex items-center gap-2">
+            <Activity className="h-4 w-4 text-primary" />
+            Core Analytics
         </h2>
-        <div className="relative group transition-transform duration-500 hover:scale-105">
+        <div className="relative group transition-transform duration-500 hover:scale-[1.02]">
             <RiskGauge score={riskScore} />
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full bg-background border shadow-sm text-xs font-bold text-primary">
-                XGBoost 2.0.3
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full bg-white border-2 shadow-sm text-[10px] font-black uppercase tracking-widest text-primary">
+                Engine: XGBoost 2.0.3
             </div>
         </div>
-        <p className="mt-10 text-center text-sm text-muted-foreground leading-relaxed max-w-xs">
-            This score represents the statistical probability of Ischemic Heart Disease presence based on your clinical inputs.
+        <p className="mt-14 text-center text-sm font-medium text-muted-foreground leading-relaxed max-w-xs px-4">
+            Statistical probability of Ischemic Heart Disease presence based on clinical biomarkers.
         </p>
       </div>
 
-      <div className="flex flex-col gap-6">
-        <div className="rounded-3xl border bg-card p-8 shadow-card">
-          <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
-              <Layers className="h-5 w-5 text-primary" />
-              Classification Tiers
+      <div className="flex flex-col gap-8">
+        <div className="glass-card rounded-[2.5rem] p-8 shadow-elevated">
+          <h3 className="mb-8 font-black uppercase tracking-widest text-[11px] text-muted-foreground flex items-center gap-2">
+              <Layers className="h-4 w-4 text-primary" />
+              Risk Classification
           </h3>
           <div className="space-y-4">
             {[
@@ -44,30 +45,35 @@ function SummarySection({ riskScore, isHighRisk }: { riskScore: number, isHighRi
               { range: "41–70", label: "Moderate Risk", color: "bg-risk-moderate", active: riskScore > 40 && riskScore <= 70 },
               { range: "71–100", label: "High Risk", color: "bg-risk-high", active: riskScore > 70 },
             ].map((r) => (
-              <div key={r.label} className={`flex items-center gap-4 rounded-2xl border p-4 transition-all duration-300 ${r.active ? "border-primary bg-accent/30 shadow-sm" : "opacity-40 grayscale"}`}>
-                <div className={`h-4 w-4 rounded-full ${r.color} shadow-sm`} />
+              <div key={r.label} className={`flex items-center gap-5 rounded-2xl border-2 p-5 transition-all duration-500 ${r.active ? "border-primary bg-primary/5 shadow-md scale-[1.02]" : "opacity-30 border-transparent"}`}>
+                <div className={`h-5 w-5 rounded-full ${r.color} shadow-lg shadow-${r.color}/20`} />
                 <div>
-                    <p className="font-bold">{r.range} <span className="text-xs font-normal text-muted-foreground ml-2">Score Units</span></p>
-                    <p className="text-sm font-medium opacity-80">{r.label}</p>
+                    <p className="font-black text-sm">{r.range} <span className="text-[10px] font-bold opacity-60 ml-1">UNITS</span></p>
+                    <p className="text-xs font-black uppercase tracking-widest opacity-60">{r.label}</p>
                 </div>
-                {r.active && <Badge className="ml-auto bg-primary text-primary-foreground">Active Case</Badge>}
+                {r.active && <div className="ml-auto flex items-center gap-1.5 text-[10px] font-black uppercase text-primary tracking-tighter"><div className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" /> In Range</div>}
               </div>
             ))}
           </div>
         </div>
         
-        <div className="rounded-3xl border bg-gradient-to-br from-primary/5 to-secondary/5 p-8 shadow-card border-primary/10">
-            <div className="flex items-center justify-between mb-2">
-                <p className="text-sm font-bold flex items-center gap-2 text-primary">
-                    <Sparkles className="h-4 w-4" /> Prediction Logic
+        <div className="rounded-[2rem] border-2 border-primary/10 bg-primary/5 p-8 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-2">
+                    <Sparkles className="h-4 w-4" /> Probabilistic Confidence
                 </p>
-                <span className="text-xs font-mono text-primary/70">{riskScore}%</span>
+                <span className="text-xs font-black text-primary">{riskScore.toFixed(1)}%</span>
             </div>
-            <div className="h-4 overflow-hidden rounded-full bg-muted border border-primary/5 p-0.5">
-              <div className="h-full rounded-full bg-gradient-primary transition-all duration-1000" style={{ width: `${riskScore}%` }} />
+            <div className="h-3 overflow-hidden rounded-full bg-muted/50 p-0.5 border border-primary/5">
+              <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: `${riskScore}%` }}
+                transition={{ duration: 1.5, ease: "easeOut" }}
+                className="h-full rounded-full bg-gradient-primary shadow-[0_0_15px_rgba(37,99,235,0.3)]" 
+              />
             </div>
-            <p className="mt-4 text-xs text-muted-foreground italic">
-                Calculated via gradient boosted decision trees focused on minimizing LogLoss in medical diagnostic spaces.
+            <p className="mt-5 text-[10px] font-bold text-muted-foreground/80 leading-relaxed italic">
+                Calibrated via gradient boosted decision trees optimized for UCI Cleveland clinical metrics.
             </p>
         </div>
       </div>
@@ -78,31 +84,31 @@ function SummarySection({ riskScore, isHighRisk }: { riskScore: number, isHighRi
 function ExplainSection({ shapData, riskScore }: { shapData: any[], riskScore: number }) {
   return (
     <div className="grid gap-8 lg:grid-cols-2">
-      <div className="rounded-3xl border bg-card p-8 shadow-card h-full">
-        <div className="flex items-center justify-between mb-8">
-            <h3 className="font-bold text-lg flex items-center gap-2">
-                <Info className="h-5 w-5 text-primary" />
-                SHAP Feature Impact
+      <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated h-full">
+        <div className="flex items-center justify-between mb-10">
+            <h3 className="font-black uppercase tracking-widest text-[11px] text-muted-foreground flex items-center gap-2">
+                <Info className="h-4 w-4 text-primary" />
+                SHAP Interpretability
             </h3>
             <TooltipProvider>
                 <ShadcnTooltip>
                     <TooltipTrigger asChild>
-                        <Info className="h-4 w-4 text-muted-foreground cursor-help" />
+                        <Info className="h-4 w-4 text-muted-foreground cursor-help hover:text-primary transition-colors" />
                     </TooltipTrigger>
-                    <TooltipContent>
-                        <p className="max-w-xs text-xs">SHAP (SHapley Additive exPlanations) shows how much each health parameter moved your risk score from the average baseline.</p>
+                    <TooltipContent className="rounded-xl border shadow-elevated p-3">
+                        <p className="max-w-[200px] text-[11px] font-medium leading-relaxed">SHAP (SHapley Additive exPlanations) visualizes the specific contribution of each biomarker to your unique risk score.</p>
                     </TooltipContent>
                 </ShadcnTooltip>
             </TooltipProvider>
         </div>
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={shapData} layout="vertical" margin={{ left: 80, right: 20 }}>
-            <XAxis type="number" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-            <YAxis dataKey="feature" type="category" tick={{ fontSize: 11, fill: 'hsl(var(--foreground))', fontWeight: 'bold' }} width={75} />
+          <BarChart data={shapData} layout="vertical" margin={{ left: 80, right: 30 }}>
+            <XAxis type="number" hide />
+            <YAxis dataKey="feature" type="category" tick={{ fontSize: 10, fill: 'hsl(var(--foreground))', fontWeight: 900 }} width={75} />
             <RechartsTooltip 
-                cursor={{ fill: 'hsl(var(--accent)/0.3)' }}
+                cursor={{ fill: 'rgba(0,0,0,0.02)' }}
                 contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-elevated)', padding: '12px' }}
-                formatter={(v: number) => [v.toFixed(4), "SHAP Magnitude"]}
+                formatter={(v: number) => [v.toFixed(4), "Impact Magnitude"]}
             />
             <Bar dataKey="shap" radius={[0, 8, 8, 0]}>
               {shapData.map((entry, i) => (
@@ -111,42 +117,53 @@ function ExplainSection({ shapData, riskScore }: { shapData: any[], riskScore: n
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-        <div className="mt-8 flex items-center justify-center gap-6 text-xs font-bold text-muted-foreground">
-          <span className="flex items-center gap-2 px-3 py-1 bg-destructive/10 text-destructive rounded-full border border-destructive/20"><span className="h-2 w-2 rounded-full bg-destructive" /> Increases Risk</span>
-          <span className="flex items-center gap-2 px-3 py-1 bg-primary/10 text-primary rounded-full border border-primary/20"><span className="h-2 w-2 rounded-full bg-primary" /> Decreases Risk</span>
+        <div className="mt-10 flex items-center justify-center gap-8 text-[10px] font-black uppercase tracking-widest">
+          <span className="flex items-center gap-2 text-destructive"><div className="h-2 w-2 rounded-full bg-destructive" /> Hyper-Risk</span>
+          <span className="flex items-center gap-2 text-primary"><div className="h-2 w-2 rounded-full bg-primary" /> Protective</span>
         </div>
       </div>
 
-      <div className="rounded-3xl border bg-card p-8 shadow-card flex flex-col">
-        <h3 className="mb-6 font-bold text-lg">AI Clinical Summary</h3>
-        <div className="space-y-4 flex-1">
+      <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated border-l-8 border-l-primary flex flex-col">
+        <h3 className="mb-10 font-black uppercase tracking-widest text-[11px] text-muted-foreground flex items-center gap-2">
+           <Brain className="h-4 w-4" /> AI Logical Summary
+        </h3>
+        <div className="space-y-6 flex-1">
           {shapData.filter((s) => s.direction === "risk").slice(0, 3).map((s, i) => (
-            <div key={i} className="group relative rounded-2xl border bg-muted/40 p-5 hover:bg-muted/60 transition-colors">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-black uppercase text-destructive tracking-widest">Driver #{i + 1}</p>
-                <Badge variant="outline" className="text-[10px] uppercase font-bold bg-background">Strong Correlation</Badge>
+            <motion.div 
+              key={i} 
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="group relative rounded-2xl border-2 border-transparent bg-muted/20 p-6 hover:bg-muted/40 transition-all hover:border-primary/5"
+            >
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-black uppercase text-destructive tracking-[0.2em]">Risk Driver #{i + 1}</p>
+                <Badge variant="outline" className="text-[9px] uppercase font-black bg-background/50 backdrop-blur-sm border-2">High Impact</Badge>
               </div>
-              <p className="text-sm font-bold capitalize">{s.feature.replace(/_/g, ' ')}</p>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                Your input value was flagged by the model. This factor is pushing your health profile into the {riskScore > 50 ? 'IHD positive' : 'moderate risk'} segment by a factor of <strong>+{s.shap.toFixed(3)}</strong>.
+              <p className="text-sm font-black capitalize tracking-tight text-slate-900">{s.feature.replace(/_/g, ' ')}</p>
+              <p className="mt-3 text-sm font-medium text-muted-foreground leading-relaxed">
+                Your biomarker value for {s.feature} is pushing your risk profile into the danger zone by a localized magnitude of <strong>+{s.shap.toFixed(3)}</strong>.
               </p>
-            </div>
+            </motion.div>
           ))}
           {shapData.filter((s) => s.direction === "protective").slice(0, 1).map((s, i) => (
-            <div key={i} className="rounded-2xl border border-primary/20 bg-primary/5 p-5">
-              <div className="flex items-center justify-between mb-1">
-                <p className="text-xs font-black uppercase text-primary tracking-widest">Protective Assets</p>
-                <Sparkles className="h-3 w-3 text-primary" />
+            <div key={i} className="rounded-2xl border-2 border-emerald-500/10 bg-emerald-500/5 p-6 shadow-sm shadow-emerald-500/5">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.2em]">Protective Biomarker</p>
+                <Sparkles className="h-3 w-3 text-emerald-500" />
               </div>
-              <p className="text-sm font-bold capitalize">{s.feature.replace(/_/g, ' ')}</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Excellent! Your {s.feature} status is significantly buffering your risk profile, lowering your score by <strong>{Math.abs(s.shap).toFixed(3)}</strong> units.
+              <p className="text-sm font-black capitalize tracking-tight text-slate-900">{s.feature.replace(/_/g, ' ')}</p>
+              <p className="mt-2 text-sm font-medium text-muted-foreground">
+                Optimal! This metric lowers your total cardiovascular risk score by <strong>{Math.abs(s.shap).toFixed(3)}</strong> units.
               </p>
             </div>
           ))}
         </div>
-        <div className="mt-6 p-4 rounded-xl border border-dashed text-xs text-muted-foreground">
-            Note: SHAP values represent localized additive feature importance for your unique profile only.
+        <div className="mt-10 p-5 rounded-2xl bg-slate-900 text-white shadow-xl">
+             <p className="text-[11px] leading-relaxed font-bold opacity-80">
+                <Info className="h-4 w-4 inline mr-2 text-primary" />
+                These SHAP values represent a personalized additive importance profile unique to your specific clinical diagnostic session.
+             </p>
         </div>
       </div>
     </div>
@@ -155,26 +172,35 @@ function ExplainSection({ shapData, riskScore }: { shapData: any[], riskScore: n
 
 function PreventionSection({ categoryIcons }: { categoryIcons: any[] }) {
   return (
-    <div className="grid gap-6 sm:grid-cols-2">
+    <div className="grid gap-8 sm:grid-cols-2">
       {categoryIcons.map((cat, idx) => (
-        <div key={cat.key} className="group rounded-3xl border bg-card p-8 shadow-card transition-all hover:shadow-elevated hover:border-primary/20">
-          <div className="mb-6 flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent group-hover:bg-primary group-hover:text-primary-foreground transition-all">
-              <cat.icon className="h-6 w-6" />
+        <motion.div 
+          key={cat.key} 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ delay: idx * 0.1 }}
+          className="group glass-card rounded-[2.5rem] p-10 shadow-elevated transition-all hover:scale-[1.02] hover:border-primary/20"
+        >
+          <div className="mb-8 flex items-center gap-5">
+            <div className="flex h-16 w-16 items-center justify-center rounded-[1.25rem] bg-slate-100 group-hover:bg-primary group-hover:text-white transition-all shadow-sm">
+              <cat.icon className="h-7 w-7" />
             </div>
-            <h3 className="font-bold text-lg">{cat.label}</h3>
+            <div>
+               <h3 className="font-black text-xl tracking-tight">{cat.label}</h3>
+               <p className="text-[10px] font-black uppercase tracking-widest text-primary opacity-60">Strategic Intervention</p>
+            </div>
           </div>
-          <ul className="space-y-4">
+          <ul className="space-y-5">
             {cat.items.length > 0 ? cat.items.map((item: string, i: number) => (
-              <li key={i} className="flex gap-3 text-sm text-muted-foreground leading-relaxed">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary shadow-sm shadow-primary/20" />
+              <li key={i} className="flex gap-4 text-sm font-medium text-muted-foreground leading-relaxed">
+                <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary/40 shadow-sm shadow-primary/20" />
                 {item}
               </li>
             )) : (
-              <li className="flex gap-2 text-sm text-muted-foreground italic">Generating specific recommendations...</li>
+              <li className="flex gap-2 text-sm text-muted-foreground italic">Compiling evidence-based protocols...</li>
             )}
           </ul>
-        </div>
+        </motion.div>
       ))}
     </div>
   );
@@ -182,16 +208,22 @@ function PreventionSection({ categoryIcons }: { categoryIcons: any[] }) {
 
 function DetailsSection({ patientData }: { patientData: Record<string, string> }) {
   return (
-    <div className="rounded-3xl border bg-card p-10 shadow-card">
-      <div className="flex items-center gap-2 mb-8">
-          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-          <h3 className="font-bold text-xl uppercase tracking-tight">Patient Clinical Metadata</h3>
+    <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated">
+      <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center gap-3">
+             <div className="h-4 w-1 bg-primary rounded-full" />
+             <h3 className="font-black text-2xl tracking-tight">Clinical Metadata</h3>
+          </div>
+          <Badge className="h-8 px-4 border-2 rounded-xl bg-slate-100 text-slate-900 font-bold uppercase tracking-widest text-[9px]">{Object.keys(patientData).length} Parameters</Badge>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Object.entries(patientData).map(([key, value]) => (
-          <div key={key} className="flex items-center justify-between rounded-2xl bg-muted/30 px-6 py-4 border border-transparent hover:border-muted-foreground/10 transition-colors">
-            <span className="text-xs font-black uppercase text-muted-foreground tracking-widest">{key.replace(/_/g, ' ')}</span>
-            <Badge variant="secondary" className="font-mono px-3 py-1 rounded-lg bg-background border">{value}</Badge>
+          <div key={key} className="flex items-center justify-between rounded-[1.25rem] bg-muted/20 px-6 py-5 border-2 border-transparent hover:border-primary/10 hover:bg-muted/30 transition-all group">
+            <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest group-hover:text-primary transition-colors">{key.replace(/_/g, ' ')}</span>
+            <span className="font-black text-slate-900 flex items-center gap-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                {value}
+            </span>
           </div>
         ))}
       </div>
@@ -201,60 +233,67 @@ function DetailsSection({ patientData }: { patientData: Record<string, string> }
 
 function GlobalSection({ riskScore }: { riskScore: number }) {
   return (
-    <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-3xl border bg-card p-8 shadow-card">
-            <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
-                <Beaker className="h-5 w-5 text-primary" />
-                Dataset Distribution Matrix
+    <div className="grid gap-10 lg:grid-cols-3">
+        <div className="lg:col-span-2 glass-card rounded-[2.5rem] p-10 shadow-elevated border-b-8 border-b-primary">
+            <h3 className="mb-3 font-black text-2xl tracking-tight flex items-center gap-3">
+                <Beaker className="h-6 w-6 text-primary" />
+                Distribution Metrics
             </h3>
-            <p className="text-sm text-muted-foreground mb-8">Visualization of the UCI Cleveland target distribution (Cleveland Clinical Data) used to calibrate this model's baseline.</p>
+            <p className="text-sm font-medium text-muted-foreground mb-10">Relative positioning within the UCI Cleveland clinical benchmark matrix (Cleveland Heart Data).</p>
             
-            <div className="flex items-center justify-center h-80 bg-muted/40 rounded-3xl border border-dashed p-8">
-                  <ResponsiveContainer width="100%" height="100%">
+            <div className="flex items-center justify-center min-h-[360px] bg-muted/10 rounded-[2rem] border-2 border-dashed border-muted-foreground/10 p-10">
+                  <ResponsiveContainer width="100%" height={300}>
                       <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                        <XAxis type="number" dataKey="x" name="Age" unit="y" tick={{fontSize: 10}} />
-                        <YAxis type="number" dataKey="y" name="Risk" unit="%" tick={{fontSize: 10}} />
-                        <ZAxis type="number" range={[50, 400]} />
-                        <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
-                        <Scatter name="Patients" data={[
-                            { x: 52, y: riskScore, z: 200, fill: 'hsl(var(--primary))' },
-                            { x: 30, y: 10, z: 100, fill: 'gray', opacity: 0.2 },
-                            { x: 45, y: 35, z: 150, fill: 'gray', opacity: 0.2 },
-                            { x: 65, y: 85, z: 180, fill: 'gray', opacity: 0.2 },
-                            { x: 58, y: 45, z: 120, fill: 'gray', opacity: 0.2 },
-                            { x: 41, y: 22, z: 100, fill: 'gray', opacity: 0.2 },
-                            { x: 70, y: 92, z: 210, fill: 'gray', opacity: 0.2 },
-                        ]} fill="hsl(var(--primary))" />
+                        <XAxis type="number" dataKey="x" name="Age" unit="y" tick={{fontSize: 10, fontWeight: 900}} />
+                        <YAxis type="number" dataKey="y" name="Risk" unit="%" tick={{fontSize: 10, fontWeight: 900}} />
+                        <ZAxis type="number" range={[50, 600]} />
+                        <RechartsTooltip cursor={{ strokeDasharray: '4 4' }} contentStyle={{borderRadius: '16px', border: 'none', boxShadow: 'var(--shadow-elevated)'}} />
+                        <Scatter name="Population Basis" data={[
+                            { x: 30, y: 10, z: 100, fill: 'gray', opacity: 0.1 },
+                            { x: 45, y: 35, z: 150, fill: 'gray', opacity: 0.1 },
+                            { x: 65, y: 85, z: 180, fill: 'gray', opacity: 0.1 },
+                            { x: 58, y: 45, z: 120, fill: 'gray', opacity: 0.1 },
+                            { x: 41, y: 22, z: 100, fill: 'gray', opacity: 0.1 },
+                            { x: 70, y: 92, z: 210, fill: 'gray', opacity: 0.1 },
+                        ]} />
+                        <Scatter name="Patient Position" data={[{ x: 52, y: riskScore, z: 400, fill: 'hsl(var(--primary))' }]} fill="hsl(var(--primary))">
+                           {[{ x: 52, y: riskScore, z: 400, fill: 'hsl(var(--primary))' }].map((entry, index) => (
+                             <Cell key={`cell-${index}`} fill={entry.fill} className="animate-pulse" />
+                           ))}
+                        </Scatter>
                       </ScatterChart>
                   </ResponsiveContainer>
             </div>
         </div>
         
-        <div className="flex flex-col gap-6">
-            <div className="rounded-3xl border bg-gradient-to-tr from-card to-background p-8 shadow-card flex-1">
-                <p className="text-[10px] font-black uppercase text-primary tracking-[0.2em] mb-2">Population Data</p>
-                <h4 className="text-2xl font-bold mb-4">Patient Profile Context</h4>
-                <div className="space-y-4">
-                    <div className="flex justify-between items-center text-sm border-b pb-2">
-                        <span className="text-muted-foreground">Prevalence in Training</span>
-                        <span className="font-bold">46.1%</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm border-b pb-2">
-                        <span className="text-muted-foreground">Mean Patient Age</span>
-                        <span className="font-bold">54.4 yrs</span>
-                    </div>
-                    <div className="flex justify-between items-center text-sm">
-                        <span className="text-muted-foreground">Data Diversity Score</span>
-                        <span className="font-bold text-success">High (UCI Standard)</span>
-                    </div>
+        <div className="flex flex-col gap-10">
+            <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated flex-1 bg-gradient-to-br from-white to-slate-50 overflow-hidden relative">
+                <div className="absolute top-0 right-0 h-40 w-40 bg-primary/5 rounded-full blur-3xl" />
+                <p className="text-[10px] font-bold uppercase text-primary tracking-[0.2em] mb-4">Training Context</p>
+                <h4 className="text-2xl font-black mb-8 tracking-tighter">Clinical Universe</h4>
+                <div className="space-y-6">
+                    {[
+                        { label: "Target Prevalence", val: "46.1%", sub: "Cleveland Standard" },
+                        { label: "Mean Patient Age", val: "54.4 yrs", sub: "Balanced Entry" },
+                        { label: "Data Reliability", val: "UCI Gold", sub: "Validated Source" },
+                    ].map(stat => (
+                        <div key={stat.label} className="group">
+                           <div className="flex justify-between items-center text-sm mb-1.5">
+                                <span className="text-muted-foreground font-bold">{stat.label}</span>
+                                <span className="font-black text-slate-900">{stat.val}</span>
+                            </div>
+                            <p className="text-[9px] font-black uppercase tracking-widest text-primary/40">{stat.sub}</p>
+                            <div className="h-0.5 w-full bg-muted mt-3 group-hover:bg-primary/20 transition-colors" />
+                        </div>
+                    ))}
                 </div>
             </div>
             
-            <div className="rounded-3xl border bg-primary p-8 shadow-card text-primary-foreground">
-                <p className="text-[10px] font-bold uppercase opacity-60 tracking-[0.2em] mb-2">Technical Note</p>
-                <h4 className="text-xl font-bold mb-3">Model Bias Handling</h4>
-                <p className="text-xs leading-relaxed opacity-90">
-                    We used SMOTE oversampling to ensure the model doesn't biasedly predict "No Risk" for edge cases. Accuracy reflects balanced cross-validation.
+            <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated bg-slate-900 text-white">
+                <p className="text-[10px] font-black uppercase opacity-40 tracking-[0.3em] mb-3 text-primary">Protocol 12-X</p>
+                <h4 className="text-xl font-black mb-4 tracking-tight">Imbalance Handling</h4>
+                <p className="text-xs font-medium leading-relaxed opacity-70">
+                    Synthetic Minority Over-sampling Technique (SMOTE) was utilized during weight calibration to eliminate diagnostic bias for edge-case patient profiles.
                 </p>
             </div>
         </div>
@@ -270,11 +309,11 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
     const accuracy = typeof value.accuracy === 'number' ? (value.accuracy * 100).toFixed(1) : '0.0';
     
     return {
-      name: key.toUpperCase() === 'NN' ? 'Neural Network' : 
-            key.toUpperCase() === 'LR' ? 'Linear Regression' :
-            key.toUpperCase() === 'RF' ? 'Random Forest' :
-            key.toUpperCase() === 'XGB' ? 'XGBoost' : 
-            key.toUpperCase() === 'SVM' ? 'SVM' : key.toUpperCase(),
+      name: key.toUpperCase() === 'NN' ? 'Neural Net' : 
+            key.toUpperCase() === 'LR' ? 'Lin. Regression' :
+            key.toUpperCase() === 'RF' ? 'Rand. Forest' :
+            key.toUpperCase() === 'XGB' ? 'XGBoost 2.0' : 
+            key.toUpperCase() === 'SVM' ? 'SVM Matrix' : key.toUpperCase(),
       score,
       accuracy,
       level: value.risk_level || 'N/A'
@@ -282,11 +321,11 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
   }).sort((a, b) => b.score - a.score);
 
   return (
-    <div className="space-y-8">
-      <div className="rounded-3xl border bg-card p-8 shadow-card">
-        <h3 className="mb-6 font-bold text-lg flex items-center gap-2">
-            <BarChart3 className="h-5 w-5 text-primary" />
-            Cross-Model Risk Probability
+    <div className="space-y-10">
+      <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated">
+        <h3 className="mb-10 font-black text-2xl tracking-tight flex items-center gap-3">
+            <BarChart3 className="h-6 w-6 text-primary" />
+            Consensus Matrix
         </h3>
         <div className="h-[400px] w-full">
             <ResponsiveContainer width="100%" height="100%">
@@ -297,21 +336,27 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
                         textAnchor="end" 
                         interval={0} 
                         height={80}
-                        tick={{fontSize: 12, fontWeight: 600}} 
+                        tick={{fontSize: 10, fontWeight: 900, fill: '#64748b'}} 
                     />
-                    <YAxis domain={[0, 100]} label={{ value: 'Risk Score (%)', angle: -90, position: 'insideLeft' }} />
+                    <YAxis domain={[0, 100]} hide />
                     <RechartsTooltip 
-                        cursor={{fill: 'transparent'}}
+                        cursor={{fill: 'rgba(0,0,0,0.02)'}}
                         content={({ active, payload }) => {
                             if (active && payload && payload.length) {
                                 const data = payload[0].payload;
                                 return (
-                                    <div className="rounded-2xl border bg-background p-4 shadow-elevated border-primary/20">
-                                        <p className="font-bold text-primary mb-1">{data.name}</p>
-                                        <div className="space-y-1 text-xs">
-                                            <p><span className="text-muted-foreground">Predicted Risk:</span> <span className="font-bold">{data.score}%</span></p>
-                                            <p><span className="text-muted-foreground">Model Accuracy:</span> <span className="font-bold">{data.accuracy}%</span></p>
-                                            <p><span className="text-muted-foreground">Classification:</span> <span className={`font-bold ${data.score > 70 ? 'text-destructive' : data.score > 40 ? 'text-risk-moderate' : 'text-risk-low'}`}>{data.level}</span></p>
+                                    <div className="glass-card bg-white/95 rounded-2xl p-5 shadow-elevated border-2 border-primary/5 min-w-[180px]">
+                                        <p className="font-black text-slate-900 mb-3 border-b pb-2">{data.name}</p>
+                                        <div className="space-y-2.5">
+                                            <div className="flex justify-between items-center text-[10px]">
+                                                 <span className="font-bold text-muted-foreground uppercase">Prediction</span>
+                                                 <span className="font-black text-primary text-sm">{data.score}%</span>
+                                            </div>
+                                            <div className="flex justify-between items-center text-[10px]">
+                                                 <span className="font-bold text-muted-foreground uppercase">Core Accuracy</span>
+                                                 <span className="font-black text-slate-900">{data.accuracy}%</span>
+                                            </div>
+                                            <div className="mt-3 text-center py-1.5 rounded-lg bg-slate-900 text-[9px] font-black uppercase text-white tracking-widest">{data.level}</div>
                                         </div>
                                     </div>
                                 );
@@ -319,12 +364,12 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
                             return null;
                         }}
                     />
-                    <Bar dataKey="score" radius={[8, 8, 0, 0]} barSize={50}>
+                    <Bar dataKey="score" radius={[12, 12, 4, 4]} barSize={54}>
                         {chartData.map((entry, index) => (
                             <Cell 
                                 key={`cell-${index}`} 
                                 fill={entry.score > 70 ? 'hsl(var(--destructive))' : entry.score > 40 ? 'hsl(var(--risk-moderate))' : 'hsl(var(--primary))'} 
-                                fillOpacity={0.8}
+                                fillOpacity={0.9}
                             />
                         ))}
                     </Bar>
@@ -333,23 +378,46 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {chartData.map((model) => (
-          <div key={model.name} className="rounded-2xl border bg-card p-5 shadow-sm text-center hover:border-primary/50 transition-colors">
-            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-2">{model.name}</p>
-            <p className={`text-2xl font-black ${model.score > 70 ? 'text-destructive' : model.score > 40 ? 'text-risk-moderate' : 'text-primary'}`}>
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
+        {chartData.map((model, idx) => (
+          <motion.div 
+            key={model.name} 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: idx * 0.05 }}
+            className="glass-card rounded-[2rem] p-6 text-center border-2 border-transparent hover:border-primary/20 transition-all hover:-translate-y-1 shadow-md"
+          >
+            <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-4">{model.name}</p>
+            <p className={`text-3xl font-black tracking-tighter ${model.score > 70 ? 'text-destructive' : model.score > 40 ? 'text-risk-moderate' : 'text-primary'}`}>
                 {model.score}%
             </p>
-            <div className="mt-3 space-y-1">
-                <Badge variant="outline" className="text-[9px] font-bold py-0 h-4 bg-muted/30">Acc: {model.accuracy}%</Badge>
-                <p className="text-[9px] font-medium text-muted-foreground leading-tight uppercase">{model.level}</p>
+            <div className="mt-5 flex flex-col items-center gap-2">
+                <Badge variant="outline" className="text-[9px] font-black py-0.5 h-auto px-3 bg-muted/30 border-2 rounded-full uppercase tracking-tighter">ACC: {model.accuracy}%</Badge>
+                <div className={`h-1 w-8 rounded-full ${model.score > 70 ? 'bg-destructive' : model.score > 40 ? 'bg-risk-moderate' : 'bg-primary'}`} />
             </div>
-          </div>
+          </motion.div>
         ))}
       </div>
     </div>
   );
 }
+
+const containerVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.6,
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
 
 export default function Results() {
   const location = useLocation();
@@ -360,16 +428,15 @@ export default function Results() {
   const handleDownloadPDF = async () => {
     try {
       setIsGeneratingPDF(true);
-      // Target the hidden full report instead of the tabbed view
       await downloadResultAsPDF("report-content-full", `AiHealthGuard_Report_${Math.random().toString(36).substring(7).toUpperCase()}.pdf`);
       toast({
-        title: "Full Report Downloaded",
-        description: "Your health risk assessment with all sections has been saved.",
+        title: "Full Report Exported",
+        description: "Your health diagnostic archive has been saved locally.",
       });
     } catch (error) {
       toast({
-        title: "Download Failed",
-        description: "There was an error generating your PDF report.",
+        title: "Export Failed",
+        description: "Encountered a critical error during PDF rendering.",
         variant: "destructive",
       });
     } finally {
@@ -401,9 +468,9 @@ export default function Results() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center">
         <Heart className="mb-4 h-12 w-12 text-muted-foreground" />
-        <h2 className="mb-2 text-xl font-semibold">No Assessment Data</h2>
-        <p className="mb-6 text-muted-foreground">Please complete the risk assessment form first.</p>
-        <Link to="/assess"><Button className="bg-gradient-primary text-primary-foreground">Go to Assessment</Button></Link>
+        <h2 className="mb-2 text-xl font-black">No Active Assessment</h2>
+        <p className="mb-8 text-sm font-medium text-muted-foreground">Clinical data is required to generate diagnostic probabilities.</p>
+        <Link to="/assess"><Button className="bg-gradient-primary text-white h-12 px-10 rounded-2xl font-black shadow-xl">Initiate Analysis</Button></Link>
       </div>
     );
   }
@@ -411,14 +478,20 @@ export default function Results() {
   if (isLoading) {
     return (
       <div className="flex min-h-[80vh] flex-col items-center justify-center p-6 text-center">
-        <div className="relative mb-8">
-            <div className="absolute -inset-8 animate-pulse-ring rounded-full bg-primary/20" />
-            <Heart className="h-16 w-16 animate-float text-primary relative z-10" />
+        <div className="relative mb-10">
+            <div className="absolute -inset-10 animate-pulse-ring rounded-full bg-primary/20" />
+            <motion.div animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} className="absolute -inset-4 border-2 border-dashed border-primary/40 rounded-full" />
+            <Heart className="h-20 w-20 animate-float text-primary relative z-10 fill-primary/10" />
         </div>
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent mb-2">Analyzing Patient Profile...</h2>
-        <p className="text-muted-foreground max-w-sm">Our XGBoost model is calculating risk probabilities and generating SHAP explainability insights.</p>
-        <div className="mt-8 w-64 h-2 bg-muted rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-primary animate-progress-bar w-full" />
+        <h2 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-slate-900 via-primary to-blue-600 bg-clip-text text-transparent mb-4">Synthesizing Consensus Matrix...</h2>
+        <p className="text-muted-foreground max-w-sm font-bold text-sm tracking-tight leading-relaxed">Aggregating XGBoost probabilities and calculating localized SHAP influence kernels.</p>
+        <div className="mt-12 w-80 h-1.5 bg-muted rounded-full overflow-hidden p-0.5 border-2 border-primary/5">
+            <motion.div 
+              initial={{ width: 0 }}
+              animate={{ width: "100%" }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              className="h-full bg-gradient-primary rounded-full shadow-[0_0_20px_rgba(37,99,235,0.5)]" 
+            />
         </div>
       </div>
     );
@@ -426,151 +499,191 @@ export default function Results() {
 
   if (error) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center px-4 text-center text-destructive">
-        <AlertTriangle className="mb-4 h-16 w-16" />
-        <h2 className="text-2xl font-bold mb-2">Prediction Engine Latency</h2>
-        <p className="mb-6 max-w-sm">{error.message}. Please verify your network connection and retry.</p>
-        <Link to="/assess"><Button variant="outline" className="gap-2"><ArrowLeft className="h-4 w-4" /> Return to Form</Button></Link>
+      <div className="flex min-h-[60vh] flex-col items-center justify-center px-6 text-center text-destructive">
+        <AlertTriangle className="mb-6 h-20 w-20 p-4 bg-destructive/10 rounded-full" />
+        <h2 className="text-3xl font-black tracking-tighter mb-3">Prediction Engine Failure</h2>
+        <p className="mb-10 max-w-sm text-sm font-bold leading-relaxed">{error.message}</p>
+        <Link to="/assess"><Button variant="outline" className="h-12 px-10 rounded-2xl border-2 border-destructive/20 text-destructive font-black hover:bg-destructive/5 gap-3"><ArrowLeft className="h-4 w-4" /> Return to Data Entry</Button></Link>
       </div>
     );
   }
 
   const categoryIcons = [
-    { key: "lifestyle", label: "Lifestyle Modifications", icon: Stethoscope, items: apiData?.recommendations?.lifestyle || [] },
-    { key: "diet", label: "Dietary Guidance", icon: Apple, items: apiData?.recommendations?.diet || [] },
-    { key: "activity", label: "Physical Activity", icon: Dumbbell, items: apiData?.recommendations?.activity || [] },
-    { key: "medical", label: "Medical Referral", icon: Pill, items: apiData?.recommendations?.medical || [] },
+    { key: "lifestyle", label: "Lifestyle Protocol", icon: Stethoscope, items: apiData?.recommendations?.lifestyle || [] },
+    { key: "diet", label: "Nutritional Target", icon: Apple, items: apiData?.recommendations?.diet || [] },
+    { key: "activity", label: "Exercise Strategy", icon: Dumbbell, items: apiData?.recommendations?.activity || [] },
+    { key: "medical", label: "Medical Intervention", icon: Pill, items: apiData?.recommendations?.medical || [] },
   ];
 
   return (
-    <div className="min-h-screen px-4 py-8 animate-in fade-in duration-700" id="report-content">
-      <div className="mx-auto max-w-5xl">
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Link to="/assess">
-              <Button variant="ghost" size="sm" className="h-10 w-10 p-0 rounded-full hover:bg-accent transition-colors">
-                <ArrowLeft className="h-5 w-5" />
-              </Button>
+    <motion.div 
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-screen px-6 py-16 bg-background relative overflow-hidden" 
+      id="report-content"
+    >
+      {/* Dynamic Background */}
+      <div className="absolute top-0 right-0 -z-10 h-[800px] w-[800px] bg-primary/5 blur-[160px] rounded-full translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 left-0 -z-10 h-[800px] w-[800px] bg-emerald-500/5 blur-[160px] rounded-full -translate-x-1/2 translate-y-1/2" />
+
+      <div className="mx-auto max-w-7xl">
+        <div className="mb-16 flex flex-col lg:flex-row lg:items-end justify-between gap-12 border-b pb-12 border-slate-100">
+          <div className="space-y-6">
+            <Link to="/assess" className="group inline-flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground hover:text-primary transition-all">
+              <div className="h-0.5 w-6 bg-muted group-hover:bg-primary transition-all" />
+              Return to Laboratory
             </Link>
-            <div>
-                <h1 className="text-2xl font-bold tracking-tight">Diagnostic Analysis Results</h1>
-                <p className="text-sm text-muted-foreground">Session ID: AI-{Math.random().toString(36).substring(7).toUpperCase()}</p>
+            <div className="flex items-center gap-8">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[2rem] bg-slate-900 shadow-3xl transform rotate-3">
+                 <img src="/logo.png" className="h-12 w-12 object-contain brightness-0 invert" alt="" />
+              </div>
+              <div>
+                  <h1 className="text-5xl font-black tracking-tighter leading-none mb-3">Diagnostic Intelligence</h1>
+                  <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.4em]">Archived Profile &bull; <span className="text-primary">XG- Consensus</span></p>
+              </div>
             </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-4">
             <Button 
                 variant="outline" 
-                className="gap-2 shadow-sm" 
+                className="h-16 px-10 rounded-[1.5rem] border-2 font-black gap-3 transition-all hover:bg-muted active:scale-95 shadow-lg bg-white" 
                 onClick={handleDownloadPDF}
                 disabled={isGeneratingPDF}
             >
               {isGeneratingPDF ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-6 w-6 animate-spin" />
               ) : (
-                  <Download className="h-4 w-4" />
+                  <Download className="h-6 w-6" />
               )}
-              {isGeneratingPDF ? "Generating..." : "PDF Report"}
+              {isGeneratingPDF ? "Compiling Report..." : "Export Full Dossier"}
             </Button>
             <Link to="/assess">
-                <Button variant="default" className="bg-gradient-primary text-primary-foreground shadow-md gap-2">
-                    <Heart className="h-4 w-4" /> New Assessment
+                <Button className="h-16 px-10 rounded-[1.5rem] bg-gradient-primary text-white font-black gap-3 transition-all hover:scale-105 active:scale-95 shadow-3xl shadow-primary/40">
+                    <Heart className="h-6 w-6 fill-white drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]" /> New Analysis
                 </Button>
             </Link>
           </div>
         </div>
 
         {apiData.prediction === 1 && (
-          <div className="mb-8 flex items-start gap-4 rounded-2xl border border-destructive/20 bg-destructive/5 p-6 shadow-sm">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
-                <AlertTriangle className="h-6 w-6" />
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-16 flex items-start gap-8 rounded-[3rem] border-2 border-destructive/20 bg-destructive/5 p-10 shadow-lg backdrop-blur-xl group"
+          >
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[1.5rem] bg-destructive text-white shadow-2xl shadow-destructive/30 group-hover:scale-110 transition-transform">
+                <AlertTriangle className="h-8 w-8" />
             </div>
             <div>
-              <p className="text-lg font-bold text-destructive">Advanced Risk Profile Detected</p>
-              <p className="text-sm text-muted-foreground leading-relaxed">Your machine-calculated IHD risk score is over the critical threshold. System recommends immediate clinical validation and consultation with a cardiology specialist.</p>
+              <p className="text-3xl font-black text-slate-900 tracking-tight">Critical Indicators Identified</p>
+              <p className="mt-3 text-base font-medium text-slate-600 leading-relaxed max-w-4xl tracking-tight">
+                Your probability matrix significantly intersects with established IHD patterns within the UCI training distribution. High-impact SHAP kernels suggest immediate clinical intervention.
+              </p>
             </div>
-          </div>
+          </motion.div>
         )}
 
-        <Tabs defaultValue="risk" className="space-y-8">
-          <TabsList className="flex h-12 items-center justify-start gap-2 bg-transparent p-0 overflow-x-auto no-scrollbar">
-            <TabsTrigger value="risk" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Risk Summary</TabsTrigger>
-            <TabsTrigger value="compare" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Model Comparison</TabsTrigger>
-            <TabsTrigger value="explain" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">AI Explanation</TabsTrigger>
-            <TabsTrigger value="prevention" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Prevention Plan</TabsTrigger>
-            <TabsTrigger value="details" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Clinical Data</TabsTrigger>
-            <TabsTrigger value="global" className="rounded-xl px-6 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all">Population Context</TabsTrigger>
+        <Tabs defaultValue="risk" className="space-y-16">
+          <TabsList className="flex h-20 items-center justify-start gap-3 bg-muted/30 rounded-[2rem] p-2.5 overflow-x-auto no-scrollbar border-2 border-white w-full lg:w-fit backdrop-blur-md">
+            {[
+              { value: "risk", label: "Outcome", icon: Activity },
+              { value: "compare", label: "Multi-Model", icon: Layers },
+              { value: "explain", label: "Interpretability", icon: Sparkles },
+              { value: "prevention", label: "Tactical Plan", icon: Stethoscope },
+              { value: "details", label: "Raw Intel", icon: Beaker },
+              { value: "global", label: "Benchmarks", icon: BarChart3 },
+            ].map(tab => (
+              <TabsTrigger key={tab.value} value={tab.value} className="h-full rounded-2xl px-8 font-black uppercase tracking-widest text-[11px] data-[state=active]:bg-white data-[state=active]:text-primary data-[state=active]:shadow-xl border border-transparent data-[state=active]:border-primary/5 transition-all gap-3 active:scale-95">
+                <tab.icon className="h-4 w-4" /> {tab.label}
+              </TabsTrigger>
+            ))}
           </TabsList>
 
-          <TabsContent value="risk" className="mt-0 focus-visible:outline-none">
-            <SummarySection riskScore={apiData.risk_score} isHighRisk={apiData.prediction === 1} />
-          </TabsContent>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key="tab-content"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.3 }}
+            >
+              <TabsContent value="risk" className="mt-0 focus-visible:outline-none">
+                <SummarySection riskScore={apiData.risk_score} isHighRisk={apiData.prediction === 1} />
+              </TabsContent>
 
-          <TabsContent value="compare" className="mt-0 focus-visible:outline-none">
-            <ModelComparisonSection modelResults={apiData.model_results} />
-          </TabsContent>
+              <TabsContent value="compare" className="mt-0 focus-visible:outline-none">
+                <ModelComparisonSection modelResults={apiData.model_results} />
+              </TabsContent>
 
-          <TabsContent value="explain" className="mt-0 focus-visible:outline-none">
-            <ExplainSection shapData={apiData.shap_data || Object.entries(apiData.shap.shap_values).map(([feature, val]) => ({
-              feature: feature,
-              shap: val as number,
-              direction: (val as number) >= 0 ? "risk" : "protective"
-            }))} riskScore={apiData.risk_score} />
-          </TabsContent>
+              <TabsContent value="explain" className="mt-0 focus-visible:outline-none">
+                <ExplainSection shapData={apiData.shap_data || Object.entries(apiData.shap.shap_values).map(([feature, val]) => ({
+                  feature: feature,
+                  shap: val as number,
+                  direction: (val as number) >= 0 ? "risk" : "protective"
+                }))} riskScore={apiData.risk_score} />
+              </TabsContent>
 
-          <TabsContent value="prevention" className="mt-0 focus-visible:outline-none">
-            <PreventionSection categoryIcons={categoryIcons} />
-          </TabsContent>
+              <TabsContent value="prevention" className="mt-0 focus-visible:outline-none">
+                <PreventionSection categoryIcons={categoryIcons} />
+              </TabsContent>
 
-          <TabsContent value="details" className="mt-0 focus-visible:outline-none">
-            <DetailsSection patientData={patientData} />
-          </TabsContent>
+              <TabsContent value="details" className="mt-0 focus-visible:outline-none">
+                <DetailsSection patientData={patientData} />
+              </TabsContent>
 
-          <TabsContent value="global" className="mt-0 focus-visible:outline-none">
-            <GlobalSection riskScore={apiData.risk_score} />
-          </TabsContent>
+              <TabsContent value="global" className="mt-0 focus-visible:outline-none">
+                <GlobalSection riskScore={apiData.risk_score} />
+              </TabsContent>
+            </motion.div>
+          </AnimatePresence>
         </Tabs>
 
         {/* --- HIDDEN FULL REPORT FOR PDF --- */}
         <div id="report-content-full" className="hidden-report-container">
-            <div className="p-8 space-y-12 bg-white text-slate-900 ring-1 ring-slate-200 rounded-3xl">
+            <div className="p-20 space-y-24 bg-white text-slate-900 border-[32px] border-slate-50 rounded-[6rem] shadow-none">
                 {/* PDF Header */}
-                <div className="flex items-center justify-between border-b pb-8">
-                    <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 bg-primary rounded-xl flex items-center justify-center">
-                            <Heart className="h-7 w-7 text-white" />
+                <div className="flex items-center justify-between border-b-[8px] border-slate-900 pb-20">
+                    <div className="flex items-center gap-10">
+                        <div className="h-24 w-24 bg-slate-900 rounded-[2.5rem] flex items-center justify-center shadow-2xl">
+                            <Heart className="h-14 w-14 text-white fill-white" />
                         </div>
                         <div>
-                            <h1 className="text-3xl font-black tracking-tight">AiHealth Guard</h1>
-                            <p className="text-sm font-bold text-primary italic uppercase tracking-widest">Medical Diagnostic Report</p>
+                            <h1 className="text-7xl font-black tracking-tighter">AiHealth Guard</h1>
+                            <p className="mt-2 text-xl font-black text-primary uppercase tracking-[0.5em]">Consolidated Clinical Dossier</p>
                         </div>
                     </div>
                     <div className="text-right">
-                        <p className="text-sm font-bold">Report Serial: AI-{Math.random().toString(36).substring(7).toUpperCase()}</p>
-                        <p className="text-xs text-muted-foreground">{new Date().toLocaleDateString()} {new Date().toLocaleTimeString()}</p>
+                        <p className="text-sm font-black uppercase text-slate-400 tracking-[0.4em] mb-2">Unique Identifier</p>
+                        <p className="text-4xl font-black tracking-tighter border-2 border-slate-900 px-6 py-2 rounded-2xl">AI-{Math.random().toString(36).substring(7).toUpperCase()}</p>
+                        <p className="text-lg font-black text-slate-500 mt-6 italic">{new Date().toLocaleDateString()} &bull; {new Date().toLocaleTimeString()}</p>
                     </div>
                 </div>
 
                 {/* Patient Summary & Risk Info */}
                 <section>
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        1. Risk Analysis Summary
-                    </h2>
+                    <div className="flex items-center gap-6 mb-16">
+                        <div className="h-16 w-16 bg-primary rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">1</div>
+                        <h2 className="text-5xl font-black tracking-tight">Risk Analysis Outcome</h2>
+                    </div>
                     <SummarySection riskScore={apiData.risk_score} isHighRisk={apiData.prediction === 1} />
                 </section>
 
                 {/* Multi-Model Comparison */}
-                <section className="break-before-page pt-8">
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        2. Cross-Architecture Decision Matrix
-                    </h2>
+                <section className="break-before-page pt-20">
+                    <div className="flex items-center gap-6 mb-16">
+                        <div className="h-16 w-16 bg-primary rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">2</div>
+                        <h2 className="text-5xl font-black tracking-tight">Ensemble Matrix Results</h2>
+                    </div>
                     <ModelComparisonSection modelResults={apiData.model_results} />
                 </section>
 
                 {/* Explainability Section */}
-                <section className="break-before-page pt-8">
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        3. AI Explainability (SHAP Analysis)
-                    </h2>
+                <section className="break-before-page pt-20">
+                    <div className="flex items-center gap-6 mb-16">
+                        <div className="h-16 w-16 bg-primary rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">3</div>
+                        <h2 className="text-5xl font-black tracking-tight">AI Logical Deconstruction</h2>
+                    </div>
                     <ExplainSection shapData={apiData.shap_data || Object.entries(apiData.shap.shap_values).map(([feature, val]) => ({
                         feature: feature,
                         shap: val as number,
@@ -579,42 +692,57 @@ export default function Results() {
                 </section>
 
                 {/* Prevention Section */}
-                <section className="break-before-page pt-8">
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        4. Strategic Prevention Plan
-                    </h2>
+                <section className="break-before-page pt-20">
+                    <div className="flex items-center gap-6 mb-16">
+                        <div className="h-16 w-16 bg-primary rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">4</div>
+                        <h2 className="text-5xl font-black tracking-tight">Strategic Intervention</h2>
+                    </div>
                     <PreventionSection categoryIcons={categoryIcons} />
                 </section>
 
                 {/* Clinical Details */}
-                <section className="break-before-page pt-8">
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        5. Input Parameters Archive
-                    </h2>
+                <section className="break-before-page pt-20">
+                   <div className="flex items-center gap-6 mb-16">
+                        <div className="h-16 w-16 bg-primary rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">5</div>
+                        <h2 className="text-5xl font-black tracking-tight">Clinical Metadata Archive</h2>
+                    </div>
                     <DetailsSection patientData={patientData} />
                 </section>
 
                 {/* Global Data */}
-                <section className="break-before-page pt-8">
-                    <h2 className="text-xl font-bold mb-6 flex items-center gap-2 border-l-4 border-primary pl-4">
-                        6. Dataset Correlation Context
-                    </h2>
+                <section className="break-before-page pt-20">
+                   <div className="flex items-center gap-6 mb-16">
+                        <div className="h-16 w-16 bg-primary rounded-[1.5rem] flex items-center justify-center text-white text-2xl font-black shadow-lg shadow-primary/20">6</div>
+                        <h2 className="text-5xl font-black tracking-tight">Population Benchmarks</h2>
+                    </div>
                     <GlobalSection riskScore={apiData.risk_score} />
                 </section>
 
                 {/* PDF Footer */}
-                <div className="mt-12 pt-8 border-t text-center space-y-2">
-                    <p className="text-xs font-bold text-muted-foreground/60 italic">
-                        The AiHealth Guard diagnostic model is an academic research tool based on the UCI Cleveland dataset. 
-                        This report is generated for educational purposes and should be validated by a licensed cardiologist.
+                <div className="mt-32 pt-16 border-t-8 border-slate-100 flex flex-col items-center text-center gap-10">
+                    <p className="text-xl font-black text-slate-400 max-w-5xl leading-relaxed italic opacity-60">
+                        This document is a synthetic diagnostic archive generated by the AiHealth Guard Research Engine. It leverages automated XGBoost & SHAP kernels. Final clinical diagnosis must be performed by a licensed medical practitioner.
                     </p>
-                    <p className="text-[10px] text-muted-foreground/40">
-                        &copy; 2026 AiHealth Guard Project. All Rights Reserved.
-                    </p>
+                    <div className="h-px w-full bg-slate-100" />
+                    <div className="flex items-center justify-between w-full px-10">
+                        <div className="flex flex-col items-start gap-4">
+                            <p className="text-xs font-black uppercase tracking-widest opacity-40">System Protocol</p>
+                            <p className="text-xl font-black text-primary tracking-tighter">XGB-SMOTE_6A4C8F35</p>
+                        </div>
+                        <div className="flex items-center gap-16 text-right">
+                            <div className="flex flex-col items-end">
+                                <div className="h-12 w-64 border-b-4 border-slate-900 mb-2" />
+                                <p className="text-[11px] font-black uppercase tracking-widest">Medical Authorization</p>
+                            </div>
+                            <div className="h-32 w-32 bg-slate-100 rounded-full border-8 border-white shadow-2xl flex items-center justify-center">
+                                <div className="h-20 w-20 border-2 border-dashed border-slate-300 rounded-full flex items-center justify-center font-black text-slate-300 text-[10px]">SEAL</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -11,6 +11,9 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    watch: {
+        ignored: ["**/node_modules/**", "**/.venv/**"],
+    },
     proxy: {
       "/api": {
         target: "http://127.0.0.1:8000",
