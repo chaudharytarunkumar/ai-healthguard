@@ -157,9 +157,9 @@ export default function Index() {
             Developed to showcase the power of machine learning in early cardiovascular risk detection and explainable healthcare AI.
           </p>
           <Button asChild size="lg" className="bg-white text-primary hover:bg-white/90 gap-2 px-10 font-bold text-lg h-14 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl">
-            <Link to="/documentation">
+            <a href="/AIHealthGuard_Project_Report.pdf" download>
               Project Documentation <ArrowRight className="h-5 w-5" />
-            </Link>
+            </a>
           </Button>
         </div>
       </section>
@@ -171,13 +171,12 @@ export default function Index() {
             <div className="flex items-center gap-3">
               <img src={logo} alt="" className="h-8 w-8 object-contain" />
               <div>
-                <Link to="/" className="text-sm font-bold hover:text-primary transition-colors">AiHealth Guard</Link>
-                <Link to="/documentation" className="block text-xs text-muted-foreground hover:text-primary transition-colors">B.Tech Major Project Final Report</Link>
+                <p className="text-sm font-bold">AiHealth Guard</p>
+                <p className="text-xs text-muted-foreground">B.Tech Major Project Final Report</p>
               </div>
             </div>
             <div className="flex gap-4">
               <Link to="/about" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">About Project</Link>
-              <Link to="/documentation" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors">Documentation</Link>
               <a href="https://github.com/chaudharytarunkumar/aihealthguard" target="_blank" className="text-xs font-medium text-muted-foreground hover:text-primary transition-colors hover:underline">GitHub</a>
             </div>
           </div>
