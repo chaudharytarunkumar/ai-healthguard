@@ -70,7 +70,8 @@ class MockModel:
         # Generate a deterministic but variable probability based on input data
         val = (np.sum(X.values) % 100) / 100.0
         return np.array([[1-val, val]])
-    def predict(self, X):
+    def predict(self, X, **kwargs):
+        # Ignore extra arguments like 'verbose'
         return (np.sum(X.values) % 100) > 50
 
 def load_model(model_name="xgb"):

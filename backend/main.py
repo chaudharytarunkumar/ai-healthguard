@@ -53,11 +53,16 @@ async def predict_risk(data: PatientData):
         results = {}
         
         # Load Metrics for context
-        metrics = {}
+        metrics_dict = {}
         metrics_path = os.path.join(os.path.dirname(__file__), 'models', 'metrics.json')
         if os.path.exists(metrics_path):
-            with open(metrics_path, 'r') as f:
-                metrics = json.load(f)
+            try:
+                with open(metrics_path, 'r') as f:
+                    metrics_list = json.load(f)
+                    # Convert list of metrics to a dictionary for easy lookup
+                    metrics_dict = {m['model'].upper(): m for m in metrics_list if 'model' in m}
+            except Exception as e:
+                print(f"Error loading metrics: {e}")
 
         for m_name in model_names:
             try:
@@ -75,7 +80,7 @@ async def predict_risk(data: PatientData):
                     "risk_score": risk_score,
                     "risk_level": risk_level,
                     "prediction": 1 if prob > 0.5 else 0,
-                    "accuracy": metrics.get(m_name.upper(), {}).get("Accuracy", 0.90) if m_name != 'nn' else metrics.get("NN", {}).get("Accuracy", 0.88)
+                    "accuracy": metrics_dict.get(m_name.upper(), {}).get("accuracy", 0.90) if m_name != 'nn' else metrics_dict.get("NN", {}).get("accuracy", 0.88)
                 }
             except Exception as e:
                 print(f"Error predicting with {m_name}: {e}")

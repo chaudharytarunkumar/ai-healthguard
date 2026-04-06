@@ -265,16 +265,21 @@ function GlobalSection({ riskScore }: { riskScore: number }) {
 function ModelComparisonSection({ modelResults }: { modelResults: Record<string, any> }) {
   if (!modelResults) return null;
   
-  const chartData = Object.entries(modelResults).map(([key, value]: [string, any]) => ({
-    name: key.toUpperCase() === 'NN' ? 'Neural Network' : 
-          key.toUpperCase() === 'LR' ? 'Linear Regression' :
-          key.toUpperCase() === 'RF' ? 'Random Forest' :
-          key.toUpperCase() === 'XGB' ? 'XGBoost' : 
-          key.toUpperCase() === 'SVM' ? 'SVM' : key.toUpperCase(),
-    score: value.risk_score,
-    accuracy: (value.accuracy * 100).toFixed(1),
-    level: value.risk_level
-  })).sort((a, b) => b.score - a.score);
+  const chartData = Object.entries(modelResults).map(([key, value]: [string, any]) => {
+    const score = typeof value.risk_score === 'number' ? value.risk_score : 0;
+    const accuracy = typeof value.accuracy === 'number' ? (value.accuracy * 100).toFixed(1) : '0.0';
+    
+    return {
+      name: key.toUpperCase() === 'NN' ? 'Neural Network' : 
+            key.toUpperCase() === 'LR' ? 'Linear Regression' :
+            key.toUpperCase() === 'RF' ? 'Random Forest' :
+            key.toUpperCase() === 'XGB' ? 'XGBoost' : 
+            key.toUpperCase() === 'SVM' ? 'SVM' : key.toUpperCase(),
+      score,
+      accuracy,
+      level: value.risk_level || 'N/A'
+    };
+  }).sort((a, b) => b.score - a.score);
 
   return (
     <div className="space-y-8">
