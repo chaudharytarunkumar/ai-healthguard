@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import RiskAssessment from "./pages/RiskAssessment";
 import Results from "./pages/Results";
 import ModelComparison from "./pages/ModelComparison";
+import Documentation from "./pages/Documentation";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/assess" element={<RiskAssessment />} />
           <Route path="/results" element={<Results />} />
           <Route path="/models" element={<ModelComparison />} />
+          <Route path="/documentation" element={<Documentation />} />
           <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
