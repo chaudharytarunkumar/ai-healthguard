@@ -26,4 +26,5 @@ COPY backend/ ./backend/
 COPY --from=frontend-builder /app/dist ./dist
 
 # Run the unified Uvicorn server, binding to Railway's $PORT
-CMD uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}
+# We use 'backend.main:app' because the WORKDIR is /app and 'backend' is a package.
+CMD ["sh", "-c", "uvicorn backend.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
