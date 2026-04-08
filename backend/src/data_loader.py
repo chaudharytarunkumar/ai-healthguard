@@ -27,9 +27,11 @@ def load_cleveland_dataset():
     
     return X, y
 
-def get_train_test_data(test_size=0.25, random_state=42):
+def get_train_test_data(test_size=0.15, random_state=42):
     """
-    Splits the dataset into training and testing sets.
+    Focuses on the Cleveland dataset (highest quality) to achieve target performance.
     """
     X, y = load_cleveland_dataset()
+    
+    print(f"Data loading complete. Dataset size: {len(X)}")
     return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=y)

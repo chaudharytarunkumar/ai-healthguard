@@ -1,91 +1,109 @@
 [
     {
         "model": "LR",
-        "accuracy": 0.8684,
-        "precision": 0.8378,
-        "recall": 0.8857,
-        "f1_score": 0.8611,
-        "auc": 0.931,
+        "accuracy": 0.8478,
+        "precision": 0.7917,
+        "recall": 0.9048,
+        "f1_score": 0.8444,
+        "auc": 0.9371,
         "confusion_matrix": [
             [
-                35,
-                6
+                20,
+                5
             ],
             [
-                4,
-                31
+                2,
+                19
             ]
         ]
     },
     {
         "model": "RF",
-        "accuracy": 0.8553,
-        "precision": 0.8158,
-        "recall": 0.8857,
-        "f1_score": 0.8493,
-        "auc": 0.9338,
+        "accuracy": 0.8261,
+        "precision": 0.76,
+        "recall": 0.9048,
+        "f1_score": 0.8261,
+        "auc": 0.9162,
         "confusion_matrix": [
             [
-                34,
-                7
+                19,
+                6
             ],
             [
-                4,
-                31
+                2,
+                19
             ]
         ]
     },
     {
         "model": "XGB",
-        "accuracy": 0.8553,
-        "precision": 0.8158,
-        "recall": 0.8857,
-        "f1_score": 0.8493,
-        "auc": 0.9129,
+        "accuracy": 0.8478,
+        "precision": 0.8182,
+        "recall": 0.8571,
+        "f1_score": 0.8372,
+        "auc": 0.9276,
         "confusion_matrix": [
             [
-                34,
-                7
+                21,
+                4
             ],
             [
-                4,
-                31
+                3,
+                18
             ]
         ]
     },
     {
         "model": "SVM",
-        "accuracy": 0.8026,
-        "precision": 0.7632,
-        "recall": 0.8286,
-        "f1_score": 0.7945,
-        "auc": 0.9066,
+        "accuracy": 0.8261,
+        "precision": 0.7826,
+        "recall": 0.8571,
+        "f1_score": 0.8182,
+        "auc": 0.9086,
         "confusion_matrix": [
             [
-                32,
-                9
+                20,
+                5
             ],
             [
-                6,
-                29
+                3,
+                18
             ]
         ]
     },
     {
         "model": "NN",
-        "accuracy": 0.8158,
-        "precision": 0.7692,
+        "accuracy": 0.7609,
+        "precision": 0.6923,
         "recall": 0.8571,
-        "f1_score": 0.8108,
-        "auc": 0.8578,
+        "f1_score": 0.766,
+        "auc": 0.8886,
         "confusion_matrix": [
             [
-                32,
-                9
+                17,
+                8
             ],
             [
-                5,
-                30
+                3,
+                18
+            ]
+        ]
+    },
+    {
+        "model": "STACKING",
+        "accuracy": 0.8261,
+        "precision": 0.7826,
+        "recall": 0.8571,
+        "f1_score": 0.8182,
+        "auc": 0.9257,
+        "confusion_matrix": [
+            [
+                20,
+                5
+            ],
+            [
+                3,
+                18
             ]
         ]
     }

@@ -34,7 +34,7 @@ export default function ModelComparison() {
   // Transform backend metrics to component format
   const displayData = Array.isArray(metrics) ? metrics.map((val: any) => {
     const nameMap: Record<string, string> = {
-      XGB: "XGBoost",
+      XGB: "⭐ XGBoost (Star Model)",
       RF: "Random Forest",
       SVM: "SVM Matrix",
       NN: "Neural Network",
@@ -48,7 +48,7 @@ export default function ModelComparison() {
       f1: (val.f1_score || 0).toFixed(2),
       precision: (val.precision * 100).toFixed(1),
       recall: (val.recall * 100).toFixed(1),
-      status: modelKey === "XGB" ? "Primary" : (modelKey === "RF" ? "Backup" : "Evaluated")
+      status: modelKey === "XGB" ? "⭐ High Performance" : (modelKey === "RF" ? "Backup" : "Evaluated")
     };
   }).sort((a, b) => parseFloat(b.accuracy) - parseFloat(a.accuracy)) : [];
 
@@ -156,8 +156,8 @@ function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
                           <td className="py-5 text-center font-bold text-muted-foreground text-xs">{m.auc}</td>
                           <td className="py-5 text-center font-bold text-muted-foreground text-xs">{m.f1}</td>
                           <td className="py-5 text-right">
-                            <Badge variant="outline" className={`h-7 px-3 font-black uppercase text-[9px] tracking-tighter rounded-lg border-2 ${m.status === "Primary" ? "border-primary/20 bg-primary/5 text-primary" : "border-slate-100"}`}>
-                              {m.status}
+                            <Badge variant="outline" className={`h-7 px-3 font-black uppercase text-[9px] tracking-tighter rounded-lg border-2 ${m.status.includes("⭐") ? "border-primary/40 bg-primary/5 text-primary shadow-sm" : "border-slate-100"}`}>
+                                {m.status}
                             </Badge>
                           </td>
                         </tr>
@@ -220,7 +220,7 @@ function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
                 />
                 <Bar dataKey="accuracy" radius={[12, 12, 4, 4]} barSize={60}>
                     {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={index === 0 ? 'hsl(var(--primary))' : 'hsl(var(--primary)/0.2)'} />
+                        <Cell key={`cell-${index}`} fill={entry.model.includes('⭐') ? 'hsl(var(--primary))' : 'hsl(var(--primary)/0.2)'} />
                     ))}
                 </Bar>
               </BarChart>

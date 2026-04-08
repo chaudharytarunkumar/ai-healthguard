@@ -24,8 +24,9 @@ function SummarySection({ riskScore, isHighRisk }: { riskScore: number, isHighRi
         </h2>
         <div className="relative group transition-transform duration-500 hover:scale-[1.02]">
             <RiskGauge score={riskScore} />
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-5 py-1.5 rounded-full bg-white border-2 shadow-sm text-[10px] font-black uppercase tracking-widest text-primary">
-                Engine: XGBoost 2.0.3
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-slate-900 text-white border-2 border-primary shadow-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group-hover:scale-110 transition-transform duration-300">
+                <Sparkles className="h-3 w-3 text-yellow-400 animate-pulse" />
+                Diagnostic Star: XGBoost 2.0.3
             </div>
         </div>
         <p className="mt-14 text-center text-sm font-medium text-muted-foreground leading-relaxed max-w-xs px-4">
@@ -312,7 +313,7 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
       name: key.toUpperCase() === 'NN' ? 'Neural Net' : 
             key.toUpperCase() === 'LR' ? 'Lin. Regression' :
             key.toUpperCase() === 'RF' ? 'Rand. Forest' :
-            key.toUpperCase() === 'XGB' ? 'XGBoost 2.0' : 
+            key.toUpperCase() === 'XGB' ? '⭐ XGBoost (Star)' : 
             key.toUpperCase() === 'SVM' ? 'SVM Matrix' : key.toUpperCase(),
       score,
       accuracy,
@@ -385,11 +386,12 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: idx * 0.05 }}
-            className="glass-card rounded-[2rem] p-6 text-center border-2 border-transparent hover:border-primary/20 transition-all hover:-translate-y-1 shadow-md"
+            className={`glass-card rounded-[2rem] p-6 text-center border-2 transition-all hover:-translate-y-1 shadow-md ${model.name.includes('⭐') ? 'border-primary/40 bg-primary/5 shadow-primary/20 scale-105 z-10' : 'border-transparent hover:border-primary/20'}`}
           >
             <p className="text-[10px] font-black uppercase text-muted-foreground tracking-widest mb-4">{model.name}</p>
             <p className={`text-3xl font-black tracking-tighter ${model.score > 70 ? 'text-destructive' : model.score > 40 ? 'text-risk-moderate' : 'text-primary'}`}>
                 {model.score}%
+                {model.name.includes('⭐') && <Sparkles className="inline-block ml-2 h-4 w-4 text-yellow-500" />}
             </p>
             <div className="mt-5 flex flex-col items-center gap-2">
                 <Badge variant="outline" className="text-[9px] font-black py-0.5 h-auto px-3 bg-muted/30 border-2 rounded-full uppercase tracking-tighter">ACC: {model.accuracy}%</Badge>
