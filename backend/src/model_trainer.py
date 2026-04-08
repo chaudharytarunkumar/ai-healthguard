@@ -60,30 +60,32 @@ def train_and_save_models(X_train, y_train):
         random_state=42,
         use_label_encoder=False,
         eval_metric='logloss',
-        booster='gbtree'
+        booster='dart' # DART: Dropouts meet Multiple Additive Regression Trees
     )
     
-    # Broad parameter distributions for RandomizedSearchCV
+    # Focused parameter distributions for high-stability performance
     param_dist = {
-        'n_estimators': [400, 500, 600, 700],
-        'max_depth': [3, 4, 5, 6, 7],
-        'learning_rate': [0.005, 0.01, 0.015, 0.02],
-        'subsample': [0.6, 0.7, 0.8, 0.9],
-        'colsample_bytree': [0.6, 0.7, 0.8, 0.9],
-        'gamma': [0, 0.1, 0.2, 0.3],
-        'alpha': [0, 0.1, 0.5, 1.0],
-        'lambda': [1, 1.5, 2, 3],
-        'min_child_weight': [1, 2, 3, 4, 5]
+        'n_estimators': [500, 700, 900],
+        'max_depth': [2, 3, 4], # Shallow trees for small datasets
+        'learning_rate': [0.01, 0.02, 0.05],
+        'subsample': [0.5, 0.6, 0.7],
+        'colsample_bytree': [0.5, 0.6, 0.7],
+        'gamma': [0.1, 0.2, 0.5],
+        'alpha': [0.1, 0.5, 1.0],
+        'lambda': [1.0, 2.0, 5.0],
+        'min_child_weight': [3, 5, 7],
+        'rate_drop': [0.0, 0.1, 0.2],
+        'skip_drop': [0.0, 0.1, 0.5]
     }
     
-    # 5-fold CV with 2 repeats (10 total fits per candidate)
+    # Stratified K-Fold with 10 total fits per candidate (stable estimates)
     cv = RepeatedStratifiedKFold(n_splits=5, n_repeats=2, random_state=42)
     
-    # 500 iterations for the highest possible performance configuration
+    # High-intensity search for the exact configuration that generalizations
     random_search = RandomizedSearchCV(
         xgb_base, 
         param_distributions=param_dist, 
-        n_iter=500,
+        n_iter=600,
         scoring='accuracy', 
         cv=cv, 
         verbose=1, 
@@ -95,7 +97,7 @@ def train_and_save_models(X_train, y_train):
     best_xgb = random_search.best_estimator_
     
     print(f"Star XGBoost Parameters: {random_search.best_params_}")
-    print(f"Best CV ROC-AUC: {random_search.best_score_:.4f}")
+    print(f"Best CV Accuracy: {random_search.best_score_:.4f}")
     
     joblib.dump(best_xgb, os.path.join(models_dir, 'xgb.pkl'))
     

@@ -3,7 +3,7 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler, RobustScaler
+from sklearn.preprocessing import StandardScaler, RobustScaler, QuantileTransformer
 from imblearn.over_sampling import SMOTE
 from imblearn.pipeline import Pipeline as ImbPipeline
 from sklearn.experimental import enable_iterative_imputer
@@ -134,10 +134,19 @@ def apply_preprocessing_and_smote(X_train, y_train):
     joblib.dump(imputer, os.path.join(models_dir, 'imputer.pkl'))
             
     # 3. Scaling
-    # Using RobustScaler to handle clinical outliers more effectively
-    scaler = RobustScaler()
+    # Use QuantileTransformer to normalize distributions for high-variance clinical data
+    qt = QuantileTransformer(output_distribution='normal', random_state=42)
     interaction_num_cols = ['age_bp', 'chol_hr_ratio', 'severity_idx', 'hr_age_ratio', 'bp_chol_prod', 'age_oldpeak', 'thal_ca_risk', 'peak_slope_interaction', 'double_product', 'ca_oldpeak', 'cp_thalach', 'metabolic_index', 'vessel_stress_idx']
     num_cols = [f for f in NUMERICAL_FEATURES if f in current_features] + [c for c in interaction_num_cols if c in current_features]
+    
+    # Apply Quantile Transformation
+    X_train_processed[num_cols] = qt.fit_transform(X_train_processed[num_cols])
+    
+    # Save the transformer
+    joblib.dump(qt, os.path.join(os.path.dirname(__file__), '..', 'models', 'quantile_transformer.pkl'))
+
+    # Final scaling with RobustScaler to handle remaining outliers
+    scaler = RobustScaler()
     X_train_processed[num_cols] = scaler.fit_transform(X_train_processed[num_cols])
     
     # Save the scaler content
@@ -177,18 +186,21 @@ def preprocess_for_inference(X_raw):
     )
 
     # 3. Scaling
+    qt_path = os.path.join(models_dir, 'quantile_transformer.pkl')
     scaler_path = os.path.join(models_dir, 'scaler.pkl')
-    if os.path.exists(scaler_path):
-        scaler = joblib.load(scaler_path)
-    else:
-        print("WARNING: scaler.pkl not found. Using Identity Scaler for Demo Mode.")
-        class DummyScaler:
-            def transform(self, X): return X
-        scaler = DummyScaler()
     
     interaction_num_cols = ['age_bp', 'chol_hr_ratio', 'severity_idx', 'hr_age_ratio', 'bp_chol_prod', 'age_oldpeak', 'thal_ca_risk', 'peak_slope_interaction', 'double_product', 'ca_oldpeak', 'cp_thalach', 'metabolic_index', 'vessel_stress_idx']
     num_cols = [f for f in NUMERICAL_FEATURES if f in current_features] + [c for c in interaction_num_cols if c in current_features]
-    X_inter[num_cols] = scaler.transform(X_inter[num_cols])
+
+    if os.path.exists(qt_path):
+        qt = joblib.load(qt_path)
+        X_inter[num_cols] = qt.transform(X_inter[num_cols])
+        
+    if os.path.exists(scaler_path):
+        scaler = joblib.load(scaler_path)
+        X_inter[num_cols] = scaler.transform(X_inter[num_cols])
+    else:
+        print("WARNING: scaler.pkl not found.")
     
     # 4. Final Feature Selection (for Models that require it)
     # Note: For simplicity in the API, we keep X_inter as the base. 
