@@ -67,7 +67,7 @@ export default function About() {
             <dl className="space-y-6 flex-1">
               {[
                 ["Institution", "G. L. Bajaj Group of Institutions, Mathura", Award],
-                ["Faculty Advisor", "Er. Ankit Pachouri", Users],
+                ["Faculty Advisor", "Er. Tanya Shrivastava", Users],
                 ["Dataset Matrix", "UCI Cleveland Heart Data", Heart],
                 ["Model Engine", "Consensus (XGB/NN/RF)", ShieldCheck],
               ].map(([k, v, Icon]: any) => (

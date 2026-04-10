@@ -85,12 +85,13 @@ def train_and_save_models(X_train, y_train):
     random_search = RandomizedSearchCV(
         xgb_base, 
         param_distributions=param_dist, 
-        n_iter=600,
+        n_iter=250, # Optimized count to prevent worker deadlock on small datasets
         scoring='accuracy', 
         cv=cv, 
-        verbose=1, 
+        verbose=2, # Increased visibility
         n_jobs=-1,
-        random_state=42
+        random_state=42,
+        pre_dispatch='2*n_jobs'
     )
     
     random_search.fit(X_train, y_train)
