@@ -157,9 +157,9 @@ export default function RiskAssessment() {
                   const field = featureFields.find(f => f.name === fieldName);
                   if (!field) return null;
                   return (
-                    <div key={fieldName} className="space-y-2.5">
+                    <div key={fieldName} className="space-y-2.5 group/field">
                       <div className="flex items-center gap-2">
-                        <Label htmlFor={fieldName} className="text-[13px] font-black uppercase tracking-widest text-muted-foreground">
+                        <Label htmlFor={fieldName} className="text-[13px] font-black uppercase tracking-widest text-muted-foreground group-focus-within/field:text-primary transition-colors">
                           {field.label}
                         </Label>
                         <TooltipProvider>
@@ -189,7 +189,7 @@ export default function RiskAssessment() {
                               placeholder={`${field.min} ${field.unit || ""}`}
                               value={formData[fieldName] || ""}
                               onChange={(e) => handleChange(fieldName, e.target.value)}
-                              className={`h-14 rounded-2xl border-2 bg-muted/30 px-6 font-bold transition-all focus:bg-background focus:ring-4 focus:ring-primary/10 ${errors[fieldName] ? "border-destructive/50" : "border-transparent hover:border-primary/20 focus:border-primary"}`}
+                              className={`h-14 rounded-2xl border-2 bg-muted/30 px-6 font-bold transition-all focus:bg-background focus:ring-4 focus:ring-primary/10 ${errors[fieldName] ? "border-destructive/50" : "border-transparent group-hover/field:border-primary/20 focus:border-primary"}`}
                             />
                             <span className="absolute right-5 top-1/2 -translate-y-1/2 text-[10px] font-black uppercase text-muted-foreground/60">{field.unit}</span>
                           </>
@@ -198,7 +198,7 @@ export default function RiskAssessment() {
                             value={formData[fieldName] || ""}
                             onValueChange={(v) => handleChange(fieldName, v)}
                           >
-                            <SelectTrigger className={`h-14 rounded-2xl border-2 bg-muted/30 px-6 font-bold transition-all focus:bg-background ${errors[fieldName] ? "border-destructive/50" : "border-transparent hover:border-primary/20 focus:border-primary"}`}>
+                            <SelectTrigger className={`h-14 rounded-2xl border-2 bg-muted/30 px-6 font-bold transition-all focus:bg-background focus:ring-4 focus:ring-primary/10 ${errors[fieldName] ? "border-destructive/50" : "border-transparent group-hover/field:border-primary/20 focus:border-primary"}`}>
                               <SelectValue placeholder="Selection..." />
                             </SelectTrigger>
                             <SelectContent className="rounded-2xl border p-1 shadow-elevated">
