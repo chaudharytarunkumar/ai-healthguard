@@ -65,7 +65,7 @@ export default function ModelComparison() {
             <div className="absolute -inset-10 animate-pulse-ring rounded-full bg-primary/20" />
             <Cpu className="h-16 w-16 animate-float text-primary relative z-10" />
         </div>
-        <h2 className="text-3xl font-black bg-gradient-to-r from-slate-900 via-primary to-blue-600 bg-clip-text text-transparent mb-4">Polling Inference Engine...</h2>
+        <h2 className="text-3xl font-black bg-gradient-to-r from-primary via-primary to-blue-600 bg-clip-text text-transparent mb-4">Polling Inference Engine...</h2>
         <p className="text-muted-foreground max-w-sm font-bold text-sm">Aggregating real-time performance validation metrics from the Python backend.</p>
       </div>
     );
@@ -79,7 +79,7 @@ export default function ModelComparison() {
         
         <div className="glass-card rounded-[2.5rem] p-12 border-destructive/20 border-2 max-w-2xl relative z-10">
             <AlertCircle className="mb-6 h-16 w-16 text-destructive mx-auto" />
-            <h2 className="text-3xl font-black text-slate-900 mb-4">Metrics Sync Failed</h2>
+            <h2 className="text-3xl font-black text-slate-800 mb-4">Metrics Sync Failed</h2>
             <p className="mb-10 text-muted-foreground font-medium leading-relaxed">
               {error.message}. <br/><span className="text-xs opacity-60 italic">Note: Live metrics require a trained model state in backend/models.</span>
             </p>
@@ -111,10 +111,10 @@ function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
 
       <div className="mx-auto max-w-7xl">
         <motion.div variants={itemVariants} className="mb-16 text-center">
-          <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-900 shadow-2xl">
+          <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary shadow-2xl">
               <BarChart3 className="h-8 w-8 text-white" />
           </div>
-          <h1 className="mb-4 text-5xl font-black tracking-tight text-slate-900">Performance Matrix</h1>
+          <h1 className="mb-4 text-5xl font-black tracking-tight text-slate-800">Performance Matrix</h1>
           <p className="text-lg font-black uppercase tracking-[0.3em] text-primary">Consensus Engine Validation &bull; SF-2 Matrix</p>
           <p className="mt-6 text-muted-foreground max-w-2xl mx-auto font-medium opacity-80 leading-relaxed">
              Comparative analysis of ensemble architectures optimized for binary IHD classification using the UCI Cleveland clinical benchmarks.
@@ -130,7 +130,7 @@ function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
                         <Binary className="h-6 w-6 text-primary" />
                         Model Discrepancy Matrix
                      </h3>
-                     <Badge className="bg-slate-100 text-slate-900 h-8 px-4 font-black uppercase text-[10px] tracking-widest rounded-xl">Stratified Cross-Val</Badge>
+                     <Badge className="bg-slate-100 text-slate-800 h-8 px-4 font-black uppercase text-[10px] tracking-widest rounded-xl">Stratified Cross-Val</Badge>
                 </div>
                 <div className="overflow-x-auto no-scrollbar">
                   <table className="w-full text-left">
@@ -149,7 +149,7 @@ function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
                           <td className="py-5">
                             <div className="flex items-center gap-3">
                               {i === 0 && <div className="h-8 w-8 rounded-xl bg-amber-100 flex items-center justify-center"><Trophy className="h-4 w-4 text-amber-600" /></div>}
-                              <span className="font-black text-sm tracking-tight text-slate-900">{m.model}</span>
+                              <span className="font-black text-sm tracking-tight text-slate-800">{m.model}</span>
                             </div>
                           </td>
                           <td className="py-5 text-center font-black text-primary text-sm">{m.accuracy}%</td>
@@ -235,11 +235,11 @@ function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
                 { label: "Evaluation", val: "Stratified k-Fold", sub: "25% Hidden Holdout", icon: Cpu },
               ].map(spec => (
                 <div key={spec.label} className="glass-card rounded-[2rem] p-8 shadow-md border-2 border-transparent hover:border-primary/10 transition-all flex flex-col items-center text-center">
-                    <div className="h-12 w-12 rounded-2xl bg-slate-900 text-white flex items-center justify-center mb-5 shadow-lg">
+                    <div className="h-12 w-12 rounded-2xl bg-primary text-white flex items-center justify-center mb-5 shadow-lg">
                         <spec.icon className="h-6 w-6" />
                     </div>
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground mb-1">{spec.label}</p>
-                    <p className="text-xl font-black text-slate-900">{spec.val}</p>
+                    <p className="text-xl font-black text-slate-800">{spec.val}</p>
                     <p className="text-[9px] font-black uppercase tracking-widest text-primary mt-2 opacity-60">{spec.sub}</p>
                 </div>
               ))}

@@ -24,7 +24,7 @@ function SummarySection({ riskScore, isHighRisk }: { riskScore: number, isHighRi
         </h2>
         <div className="relative group transition-transform duration-500 hover:scale-[1.02]">
             <RiskGauge score={riskScore} />
-            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-slate-900 text-white border-2 border-primary shadow-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group-hover:scale-110 transition-transform duration-300">
+            <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-primary text-white border-2 border-primary shadow-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 group-hover:scale-110 transition-transform duration-300">
                 <Sparkles className="h-3 w-3 text-yellow-400 animate-pulse" />
                 Diagnostic Star: XGBoost 2.0.3
             </div>
@@ -141,7 +141,7 @@ function ExplainSection({ shapData, riskScore }: { shapData: any[], riskScore: n
                 <p className="text-[10px] font-black uppercase text-destructive tracking-[0.2em]">Risk Driver #{i + 1}</p>
                 <Badge variant="outline" className="text-[9px] uppercase font-black bg-background/50 backdrop-blur-sm border-2">High Impact</Badge>
               </div>
-              <p className="text-sm font-black capitalize tracking-tight text-slate-900">{s.feature.replace(/_/g, ' ')}</p>
+              <p className="text-sm font-black capitalize tracking-tight text-slate-800">{s.feature.replace(/_/g, ' ')}</p>
               <p className="mt-3 text-sm font-medium text-muted-foreground leading-relaxed">
                 Your biomarker value for {s.feature} is pushing your risk profile into the danger zone by a localized magnitude of <strong>+{s.shap.toFixed(3)}</strong>.
               </p>
@@ -153,14 +153,14 @@ function ExplainSection({ shapData, riskScore }: { shapData: any[], riskScore: n
                 <p className="text-[10px] font-black uppercase text-emerald-600 tracking-[0.2em]">Protective Biomarker</p>
                 <Sparkles className="h-3 w-3 text-emerald-500" />
               </div>
-              <p className="text-sm font-black capitalize tracking-tight text-slate-900">{s.feature.replace(/_/g, ' ')}</p>
+              <p className="text-sm font-black capitalize tracking-tight text-slate-800">{s.feature.replace(/_/g, ' ')}</p>
               <p className="mt-2 text-sm font-medium text-muted-foreground">
                 Optimal! This metric lowers your total cardiovascular risk score by <strong>{Math.abs(s.shap).toFixed(3)}</strong> units.
               </p>
             </div>
           ))}
         </div>
-        <div className="mt-10 p-5 rounded-2xl bg-slate-900 text-white shadow-xl">
+        <div className="mt-10 p-5 rounded-2xl bg-primary text-white shadow-xl">
              <p className="text-[11px] leading-relaxed font-bold opacity-80">
                 <Info className="h-4 w-4 inline mr-2 text-primary" />
                 These SHAP values represent a personalized additive importance profile unique to your specific clinical diagnostic session.
@@ -215,13 +215,13 @@ function DetailsSection({ patientData }: { patientData: Record<string, string> }
              <div className="h-4 w-1 bg-primary rounded-full" />
              <h3 className="font-black text-2xl tracking-tight">Clinical Metadata</h3>
           </div>
-          <Badge className="h-8 px-4 border-2 rounded-xl bg-slate-100 text-slate-900 font-bold uppercase tracking-widest text-[9px]">{Object.keys(patientData).length} Parameters</Badge>
+          <Badge className="h-8 px-4 border-2 rounded-xl bg-slate-100 text-slate-800 font-bold uppercase tracking-widest text-[9px]">{Object.keys(patientData).length} Parameters</Badge>
       </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {Object.entries(patientData).map(([key, value]) => (
           <div key={key} className="flex items-center justify-between rounded-[1.25rem] bg-muted/20 px-6 py-5 border-2 border-transparent hover:border-primary/10 hover:bg-muted/30 transition-all group">
             <span className="text-[10px] font-black uppercase text-muted-foreground tracking-widest group-hover:text-primary transition-colors">{key.replace(/_/g, ' ')}</span>
-            <span className="font-black text-slate-900 flex items-center gap-2">
+            <span className="font-black text-slate-800 flex items-center gap-2">
                 <div className="h-1.5 w-1.5 rounded-full bg-slate-300" />
                 {value}
             </span>
@@ -281,7 +281,7 @@ function GlobalSection({ riskScore }: { riskScore: number }) {
                         <div key={stat.label} className="group">
                            <div className="flex justify-between items-center text-sm mb-1.5">
                                 <span className="text-muted-foreground font-bold">{stat.label}</span>
-                                <span className="font-black text-slate-900">{stat.val}</span>
+                                <span className="font-black text-slate-800">{stat.val}</span>
                             </div>
                             <p className="text-[9px] font-black uppercase tracking-widest text-primary/40">{stat.sub}</p>
                             <div className="h-0.5 w-full bg-muted mt-3 group-hover:bg-primary/20 transition-colors" />
@@ -290,7 +290,7 @@ function GlobalSection({ riskScore }: { riskScore: number }) {
                 </div>
             </div>
             
-            <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated bg-slate-900 text-white">
+            <div className="glass-card rounded-[2.5rem] p-10 shadow-elevated bg-primary text-white">
                 <p className="text-[10px] font-black uppercase opacity-40 tracking-[0.3em] mb-3 text-primary">Protocol 12-X</p>
                 <h4 className="text-xl font-black mb-4 tracking-tight">Imbalance Handling</h4>
                 <p className="text-xs font-medium leading-relaxed opacity-70">
@@ -347,7 +347,7 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
                                 const data = payload[0].payload;
                                 return (
                                     <div className="glass-card bg-white/95 rounded-2xl p-5 shadow-elevated border-2 border-primary/5 min-w-[180px]">
-                                        <p className="font-black text-slate-900 mb-3 border-b pb-2">{data.name}</p>
+                                        <p className="font-black text-slate-800 mb-3 border-b pb-2">{data.name}</p>
                                         <div className="space-y-2.5">
                                             <div className="flex justify-between items-center text-[10px]">
                                                  <span className="font-bold text-muted-foreground uppercase">Prediction</span>
@@ -355,9 +355,9 @@ function ModelComparisonSection({ modelResults }: { modelResults: Record<string,
                                             </div>
                                             <div className="flex justify-between items-center text-[10px]">
                                                  <span className="font-bold text-muted-foreground uppercase">Core Accuracy</span>
-                                                 <span className="font-black text-slate-900">{data.accuracy}%</span>
+                                                 <span className="font-black text-slate-800">{data.accuracy}%</span>
                                             </div>
-                                            <div className="mt-3 text-center py-1.5 rounded-lg bg-slate-900 text-[9px] font-black uppercase text-white tracking-widest">{data.level}</div>
+                                            <div className="mt-3 text-center py-1.5 rounded-lg bg-primary text-[9px] font-black uppercase text-white tracking-widest">{data.level}</div>
                                         </div>
                                     </div>
                                 );
@@ -485,7 +485,7 @@ export default function Results() {
             <motion.div animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} className="absolute -inset-4 border-2 border-dashed border-primary/40 rounded-full" />
             <Heart className="h-20 w-20 animate-float text-primary relative z-10 fill-primary/10" />
         </div>
-        <h2 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-slate-900 via-primary to-blue-600 bg-clip-text text-transparent mb-4">Synthesizing Consensus Matrix...</h2>
+        <h2 className="text-4xl font-black tracking-tighter bg-gradient-to-r from-primary via-primary to-blue-600 bg-clip-text text-transparent mb-4">Synthesizing Consensus Matrix...</h2>
         <p className="text-muted-foreground max-w-sm font-bold text-sm tracking-tight leading-relaxed">Aggregating XGBoost probabilities and calculating localized SHAP influence kernels.</p>
         <div className="mt-12 w-80 h-1.5 bg-muted rounded-full overflow-hidden p-0.5 border-2 border-primary/5">
             <motion.div 
@@ -537,7 +537,7 @@ export default function Results() {
               Return to Laboratory
             </Link>
             <div className="flex items-center gap-8">
-              <div className="flex h-20 w-20 items-center justify-center rounded-[2rem] bg-slate-900 shadow-3xl transform rotate-3">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[2rem] bg-primary shadow-3xl transform rotate-3">
                  <img src="/logo.png" className="h-12 w-12 object-contain brightness-0 invert" alt="" />
               </div>
               <div>
@@ -578,7 +578,7 @@ export default function Results() {
                 <AlertTriangle className="h-8 w-8" />
             </div>
             <div>
-              <p className="text-3xl font-black text-slate-900 tracking-tight">Critical Indicators Identified</p>
+              <p className="text-3xl font-black text-slate-800 tracking-tight">Critical Indicators Identified</p>
               <p className="mt-3 text-base font-medium text-slate-600 leading-relaxed max-w-4xl tracking-tight">
                 Your probability matrix significantly intersects with established IHD patterns within the UCI training distribution. High-impact SHAP kernels suggest immediate clinical intervention.
               </p>
@@ -643,11 +643,11 @@ export default function Results() {
 
         {/* --- HIDDEN FULL REPORT FOR PDF --- */}
         <div id="report-content-full" className="hidden-report-container">
-            <div className="p-20 space-y-24 bg-white text-slate-900 border-[32px] border-slate-50 rounded-[6rem] shadow-none">
+            <div className="p-20 space-y-24 bg-white text-slate-800 border-[32px] border-slate-50 rounded-[6rem] shadow-none">
                 {/* PDF Header */}
-                <div className="flex items-center justify-between border-b-[8px] border-slate-900 pb-20">
+                <div className="flex items-center justify-between border-b-[8px] border-primary pb-20">
                     <div className="flex items-center gap-10">
-                        <div className="h-24 w-24 bg-slate-900 rounded-[2.5rem] flex items-center justify-center shadow-2xl">
+                        <div className="h-24 w-24 bg-primary rounded-[2.5rem] flex items-center justify-center shadow-2xl">
                             <Heart className="h-14 w-14 text-white fill-white" />
                         </div>
                         <div>
@@ -657,7 +657,7 @@ export default function Results() {
                     </div>
                     <div className="text-right">
                         <p className="text-sm font-black uppercase text-slate-400 tracking-[0.4em] mb-2">Unique Identifier</p>
-                        <p className="text-4xl font-black tracking-tighter border-2 border-slate-900 px-6 py-2 rounded-2xl">AI-{Math.random().toString(36).substring(7).toUpperCase()}</p>
+                        <p className="text-4xl font-black tracking-tighter border-2 border-primary px-6 py-2 rounded-2xl">AI-{Math.random().toString(36).substring(7).toUpperCase()}</p>
                         <p className="text-lg font-black text-slate-500 mt-6 italic">{new Date().toLocaleDateString()} &bull; {new Date().toLocaleTimeString()}</p>
                     </div>
                 </div>
@@ -733,7 +733,7 @@ export default function Results() {
                         </div>
                         <div className="flex items-center gap-16 text-right">
                             <div className="flex flex-col items-end">
-                                <div className="h-12 w-64 border-b-4 border-slate-900 mb-2" />
+                                <div className="h-12 w-64 border-b-4 border-primary mb-2" />
                                 <p className="text-[11px] font-black uppercase tracking-widest">Medical Authorization</p>
                             </div>
                             <div className="h-32 w-32 bg-slate-100 rounded-full border-8 border-white shadow-2xl flex items-center justify-center">

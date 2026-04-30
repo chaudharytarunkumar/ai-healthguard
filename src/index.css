@@ -6,52 +6,52 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    --background: 0 0% 100%;
+    --foreground: 220 20% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 220 20% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 220 20% 20%;
 
-    --primary: 210 80% 45%;
+    --primary: 215 80% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 170 50% 45%;
+    --secondary: 160 60% 40%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 15% 50%;
+    --muted: 210 20% 96%;
+    --muted-foreground: 215 15% 45%;
 
-    --accent: 210 60% 95%;
-    --accent-foreground: 210 80% 35%;
+    --accent: 215 80% 95%;
+    --accent-foreground: 215 80% 35%;
 
-    --destructive: 0 72% 51%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 20% 90%;
-    --input: 210 20% 90%;
-    --ring: 210 80% 45%;
+    --border: 210 15% 90%;
+    --input: 210 15% 90%;
+    --ring: 215 80% 40%;
 
     --radius: 0.75rem;
 
-    /* Custom tokens for a premium medical feel */
-    --risk-low: 156 72% 38%;
-    --risk-moderate: 35 92% 50%;
-    --risk-high: 0 84% 60%;
+    /* Custom tokens for a clinical medical feel */
+    --risk-low: 150 60% 45%;
+    --risk-moderate: 35 90% 55%;
+    --risk-high: 0 75% 55%;
     --surface-elevated: 0 0% 100%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(215 90% 50%), hsl(190 90% 45%));
-    --gradient-hero: linear-gradient(160deg, hsl(220 80% 15%), hsl(220 70% 25%));
-    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-    --gradient-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.02));
+    --gradient-primary: linear-gradient(135deg, hsl(215 80% 45%), hsl(215 80% 35%));
+    --gradient-hero: linear-gradient(160deg, hsl(210 20% 98%), hsl(215 30% 95%));
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+    --gradient-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.02));
 
-    --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 12px 24px -4px rgba(0, 0, 0, 0.08);
-    --shadow-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.12);
-    --shadow-card: 0 0 0 1px rgba(0, 0, 0, 0.03), 0 4px 12px -2px rgba(0, 0, 0, 0.05);
-    --shadow-elevated: 0 0 0 1px rgba(0, 0, 0, 0.04), 0 20px 40px -8px rgba(0, 0, 0, 0.1);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
+    --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -122,11 +122,11 @@
   }
 
   .glass-card {
-    @apply bg-white/70 backdrop-blur-xl border border-white/40 shadow-card;
+    @apply bg-white/95 backdrop-blur-xl border border-slate-200 shadow-card;
   }
 
   .glass-header {
-    @apply bg-background/60 backdrop-blur-md border-b border-white/10;
+    @apply bg-white/90 backdrop-blur-md border-b border-slate-200;
   }
 
   .shadow-card {
@@ -157,12 +157,12 @@
   }
 
   .mesh-gradient {
-    background-color: hsla(220, 80%, 15%, 1);
+    background-color: hsla(210, 20%, 98%, 1);
     background-image: 
-      radial-gradient(at 0% 0%, hsla(210, 90%, 30%, 1) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, hsla(190, 80%, 25%, 1) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, hsla(230, 70%, 20%, 1) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, hsla(200, 85% , 35%, 1) 0px, transparent 50%);
+      radial-gradient(at 0% 0%, hsla(215, 80%, 95%, 1) 0px, transparent 50%),
+      radial-gradient(at 100% 0%, hsla(160, 60%, 95%, 1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, hsla(210, 60%, 97%, 1) 0px, transparent 50%),
+      radial-gradient(at 0% 100%, hsla(200, 70% , 95%, 1) 0px, transparent 50%);
   }
 
   /* PDF Generation Helpers */

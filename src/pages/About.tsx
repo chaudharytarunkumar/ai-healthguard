@@ -43,10 +43,10 @@ export default function About() {
         className="mx-auto max-w-5xl"
       >
         <motion.div variants={itemVariants} className="mb-16 text-center">
-          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-slate-900 shadow-2xl transform rotate-3">
+          <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-primary shadow-2xl transform rotate-3">
             <img src={logo} alt="AiHealth Guard" className="h-14 w-14 object-contain brightness-0 invert" />
           </div>
-          <h1 className="mb-4 text-5xl font-black tracking-tight text-slate-900 sm:text-6xl">About AiHealth Guard</h1>
+          <h1 className="mb-4 text-5xl font-black tracking-tight text-slate-800 sm:text-6xl">About AiHealth Guard</h1>
           <p className="text-lg font-black uppercase tracking-[0.3em] text-primary max-w-2xl mx-auto">
             B.Tech Major Project &bull; CSE &bull; 2025–26
           </p>
@@ -56,7 +56,7 @@ export default function About() {
           {/* Project Info */}
           <motion.div variants={itemVariants} className="glass-card rounded-[2.5rem] p-10 shadow-elevated border-l-8 border-l-primary flex flex-col h-full">
             <div className="mb-8 flex items-center gap-5">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg">
                 <GraduationCap className="h-7 w-7" />
               </div>
               <div>
@@ -77,7 +77,7 @@ export default function About() {
                   </div>
                   <div>
                     <dt className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">{k}</dt>
-                    <dd className="text-sm font-black text-slate-900 mt-1">{v}</dd>
+                    <dd className="text-sm font-black text-slate-800 mt-1">{v}</dd>
                   </div>
                 </div>
               ))}
@@ -87,7 +87,7 @@ export default function About() {
           {/* Team */}
           <motion.div variants={itemVariants} className="glass-card rounded-[2.5rem] p-10 shadow-elevated h-full">
             <div className="mb-10 flex items-center gap-5">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg">
                 <Users className="h-7 w-7" />
               </div>
               <div>
@@ -102,7 +102,7 @@ export default function About() {
                     {t.name.split(" ").map((n) => n[0]).join("")}
                   </div>
                   <div>
-                    <p className="text-sm font-black tracking-tight text-slate-900">{t.name}</p>
+                    <p className="text-sm font-black tracking-tight text-slate-800">{t.name}</p>
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-0.5">{t.role}</p>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ export default function About() {
         {/* References */}
         <motion.div variants={itemVariants} className="mt-10 glass-card rounded-[2.5rem] p-10 shadow-elevated">
           <div className="mb-8 flex items-center gap-5">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary text-white shadow-lg">
               <BookOpen className="h-7 w-7" />
             </div>
             <div>

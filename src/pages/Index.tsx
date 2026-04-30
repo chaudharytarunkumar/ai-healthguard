@@ -121,9 +121,9 @@ export default function Index() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-5 py-2 text-sm font-bold text-white/90 shadow-2xl"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 backdrop-blur-md px-5 py-2 text-sm font-bold text-slate-800 shadow-sm"
           >
-            <Sparkles className="h-4 w-4 text-emerald-400" />
+            <Sparkles className="h-4 w-4 text-primary" />
             <span>State-of-the-Art Cardiovascular Prediction Engine</span>
           </motion.div>
 
@@ -131,17 +131,17 @@ export default function Index() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
-            className="mb-8 text-5xl font-black leading-[1.1] tracking-tighter text-white sm:text-7xl lg:text-8xl"
+            className="mb-8 text-5xl font-black leading-[1.1] tracking-tighter text-slate-800 sm:text-7xl lg:text-8xl"
           >
             Advanced Heart Risk <br />
-            <span className="bg-gradient-to-r from-emerald-300 via-blue-300 to-teal-300 bg-clip-text text-transparent">Detection via AI</span>
+            <span className="text-gradient-primary">Detection via AI</span>
           </motion.h1>
 
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
-            className="mx-auto mb-12 max-w-2xl text-xl font-medium leading-relaxed text-white/70"
+            className="mx-auto mb-12 max-w-2xl text-xl font-medium leading-relaxed text-slate-600"
           >
             AiHealth Guard leverages ensemble machine learning to identify silent IHD risks with 95% accuracy, providing explainable clinical insights in seconds.
           </motion.p>
@@ -153,12 +153,12 @@ export default function Index() {
             className="flex flex-col items-center justify-center gap-5 sm:flex-row"
           >
             <Link to="/assess">
-              <Button size="lg" className="h-16 px-10 rounded-2xl bg-white text-slate-900 hover:bg-white/90 gap-3 text-lg font-black shadow-[0_20px_50px_rgba(255,255,255,0.2)] transition-all hover:scale-105 active:scale-95">
-                Run Assessment <Heart className="h-6 w-6 text-rose-500 fill-rose-500" />
+              <Button size="lg" className="h-16 px-10 rounded-2xl bg-gradient-primary text-white hover:opacity-90 gap-3 text-lg font-black shadow-lg shadow-primary/30 transition-all hover:scale-105 active:scale-95">
+                Run Assessment <Heart className="h-6 w-6 fill-white drop-shadow-sm" />
               </Button>
             </Link>
             <Link to="/about">
-              <Button size="lg" variant="outline" className="h-16 px-10 rounded-2xl border-white/20 bg-white/5 backdrop-blur-md text-white hover:bg-white/10 gap-3 text-lg font-bold transition-all hover:scale-105">
+              <Button size="lg" variant="outline" className="h-16 px-10 rounded-2xl border-slate-200 bg-white/80 backdrop-blur-md text-slate-800 hover:bg-slate-50 gap-3 text-lg font-bold transition-all hover:scale-105">
                 Technical Overview <ArrowRight className="h-5 w-5" />
               </Button>
             </Link>
@@ -270,24 +270,24 @@ export default function Index() {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
-          className="mx-auto max-w-5xl overflow-hidden relative rounded-[3rem] bg-gradient-hero p-16 text-center text-white border border-white/5 shadow-2xl"
+          className="mx-auto max-w-5xl overflow-hidden relative rounded-[3rem] bg-gradient-hero p-16 text-center text-slate-800 border border-slate-200 shadow-xl"
         >
-          <div className="absolute top-0 right-0 h-full w-full opacity-20 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-blue-400 to-transparent" />
+          <div className="absolute top-0 right-0 h-full w-full opacity-30 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary/20 to-transparent" />
           
           <div className="relative z-10">
             <div className="mb-10 flex justify-center">
-               <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-md">
-                 <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+               <div className="rounded-2xl bg-primary/10 p-4 backdrop-blur-md">
+                 <CheckCircle2 className="h-8 w-8 text-primary" />
                </div>
             </div>
             <h2 className="mb-6 text-4xl font-black tracking-tight sm:text-6xl">
               Academic Research <br /> Final Year Project
             </h2>
-            <p className="mx-auto mb-12 max-w-2xl text-xl font-medium text-white/70 leading-relaxed">
+            <p className="mx-auto mb-12 max-w-2xl text-xl font-medium text-slate-600 leading-relaxed">
               This B.Tech Major Project integrates advanced machine learning algorithms to bridge the gap between clinical data and diagnostic explainability.
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <Button asChild size="lg" className="h-16 px-12 rounded-2xl bg-white text-slate-900 hover:bg-white/90 font-black text-xl shadow-2xl transition-all hover:scale-105">
+              <Button asChild size="lg" className="h-16 px-12 rounded-2xl bg-primary text-white hover:opacity-90 font-black text-xl shadow-lg shadow-primary/20 transition-all hover:scale-105">
                 <a href="/AIHealthGuard_Project_Report.pdf" download>
                   Download Report <ArrowRight className="h-5 w-5 ml-2" />
                 </a>

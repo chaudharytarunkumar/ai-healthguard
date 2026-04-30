@@ -239,7 +239,7 @@ export default function RiskAssessment() {
                   )}
                   
                   {currentSectionIdx < sections.length - 1 ? (
-                    <Button type="button" onClick={nextSection} className="h-14 px-8 rounded-2xl bg-slate-900 text-white font-black hover:bg-slate-800 gap-2 transition-all hover:translate-x-1 active:scale-95 shadow-xl">
+                    <Button type="button" onClick={nextSection} className="h-14 px-8 rounded-2xl bg-primary text-white font-black hover:bg-slate-800 gap-2 transition-all hover:translate-x-1 active:scale-95 shadow-xl">
                       Proceed <ChevronRight className="h-5 w-5" />
                     </Button>
                   ) : (

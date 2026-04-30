@@ -28,7 +28,7 @@ const NotFound = () => {
             <HeartCrack className="h-12 w-12 text-destructive relative z-10" />
         </div>
         
-        <h1 className="mb-4 text-7xl md:text-8xl font-black tracking-tighter text-slate-900">404</h1>
+        <h1 className="mb-4 text-7xl md:text-8xl font-black tracking-tighter text-slate-800">404</h1>
         
         <div className="inline-block mb-6 rounded-full border border-primary/20 bg-primary/5 px-4 py-1 text-xs font-black uppercase tracking-widest text-primary">
           System Endpoint Not Found
