@@ -15,17 +15,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 20% 20%;
 
-    --primary: 215 80% 40%;
+    --primary: 215 90% 25%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 60% 40%;
+    --secondary: 200 80% 40%;
     --secondary-foreground: 0 0% 100%;
 
     --muted: 210 20% 96%;
     --muted-foreground: 215 15% 45%;
 
-    --accent: 215 80% 95%;
-    --accent-foreground: 215 80% 35%;
+    --accent: 215 20% 95%;
+    --accent-foreground: 215 90% 25%;
 
     --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
@@ -42,16 +42,16 @@
     --risk-high: 0 75% 55%;
     --surface-elevated: 0 0% 100%;
     
-    --gradient-primary: linear-gradient(135deg, hsl(215 80% 45%), hsl(215 80% 35%));
-    --gradient-hero: linear-gradient(160deg, hsl(210 20% 98%), hsl(215 30% 95%));
-    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-    --gradient-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.02));
+    --gradient-primary: linear-gradient(135deg, hsl(215 90% 25%), hsl(215 80% 20%));
+    --gradient-hero: linear-gradient(160deg, hsl(210 20% 98%), hsl(215 20% 95%));
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.95));
+    --gradient-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.5), rgba(0, 0, 0, 0.01));
 
-    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.03);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
     --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
-    --shadow-elevated: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
+    --shadow-elevated: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(0, 0, 0, 0.03);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -76,8 +76,8 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-bold tracking-tight;
-    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    @apply font-semibold;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
   /* Custom Scrollbar */
@@ -122,11 +122,11 @@
   }
 
   .glass-card {
-    @apply bg-white/95 backdrop-blur-xl border border-slate-200 shadow-card;
+    @apply bg-white border border-slate-200 shadow-sm;
   }
 
   .glass-header {
-    @apply bg-white/90 backdrop-blur-md border-b border-slate-200;
+    @apply bg-white border-b border-slate-200;
   }
 
   .shadow-card {
