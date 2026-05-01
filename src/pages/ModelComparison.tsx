@@ -1,4 +1,5 @@
 import { useQuery } from"@tanstack/react-query";
+import { useSEO } from "@/hooks/useSEO";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Legend, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Cell } from"recharts";
 import { Badge } from"@/components/ui/badge";
 import { Trophy, Loader2, AlertCircle, Cpu, Activity, BarChart3, Binary, ShieldCheck } from"lucide-react";
@@ -19,6 +20,11 @@ const itemVariants = {
 };
 
 export default function ModelComparison() {
+  useSEO({
+    title: "Ensemble Model Comparison | AiHealth Guard",
+    description: "Compare real-time performance metrics of the XGBoost, Random Forest, SVM, and Neural Network models driving the AiHealth Guard prediction engine.",
+  });
+
  const { data: metrics, isLoading, error } = useQuery({
  queryKey: ["metrics"],
  queryFn: async () => {
@@ -99,11 +105,12 @@ export default function ModelComparison() {
 
 function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
  return (
- <motion.div 
+ <motion.main 
  variants={containerVariants}
  initial="hidden"
  animate="visible"
  className="min-h-screen px-6 py-16 bg-background relative overflow-hidden"
+ id="main-content"
  >
  {/* Dynamic Background */}
  <div className="absolute top-0 right-0 -z-10 h-[600px] w-[600px] bg-primary/5 blur-[140px] rounded-full translate-x-1/2 -translate-y-1/2" />
@@ -248,7 +255,7 @@ function MetricsDashboard({ data, radar }: { data: any[], radar: any[] }) {
  <footer className="mt-20 text-center text-[10px] font-semibold uppercase tracking-[0.6em] text-muted-foreground/30">
  Realtime Consensus Validation Engine v2.0.3
  </footer>
- </div>
- </motion.div>
- );
+    </div>
+  </motion.main>
+  );
 }

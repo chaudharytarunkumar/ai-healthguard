@@ -4,7 +4,8 @@ import { Shield, Brain, Activity, ArrowRight, BarChart3, FileText, Users, Sparkl
 import { Button } from"@/components/ui/button";
 import { Badge } from"@/components/ui/badge";
 import { motion, useScroll, useTransform } from"framer-motion";
-import logo from"@/assets/logo.png";
+import logo from "@/assets/logo.png";
+import { useSEO } from "@/hooks/useSEO";
 
 const features = [
  { 
@@ -58,7 +59,12 @@ const itemVariants = {
 };
 
 export default function Index() {
- const { data: metrics } = useQuery({
+  useSEO({
+    title: "AiHealth Guard | Enterprise Cardiovascular Prediction System",
+    description: "AiHealth Guard integrates ensemble machine learning algorithms to provide accurate, explainable risk assessments for ischemic heart disease.",
+  });
+
+  const { data: metrics } = useQuery({
  queryKey: ["metrics"],
  queryFn: async () => {
  const res = await fetch("/api/metrics");
@@ -79,7 +85,7 @@ export default function Index() {
 ];
 
  return (
- <div className="min-h-screen">
+  <main className="min-h-screen" id="main-content">
  {/* Hero Section */}
  <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden mesh-gradient px-6 py-24">
  {/* Animated Background Elements */}
@@ -141,13 +147,13 @@ export default function Index() {
         transition={{ delay: 0.8, duration: 0.6 }}
         className="flex flex-col sm:flex-row gap-4"
       >
-        <Link to="/assess">
-          <Button size="lg" className="h-12 px-8 rounded-md bg-primary text-white hover:bg-primary/90 gap-2 text-base font-semibold shadow-sm transition-all">
+        <Link to="/assess" id="link-initiate-assessment">
+          <Button id="btn-initiate-assessment" size="lg" className="h-12 px-8 rounded-md bg-primary text-white hover:bg-primary/90 gap-2 text-base font-semibold shadow-sm transition-all">
             Initiate Assessment <ArrowRight className="h-4 w-4" />
           </Button>
         </Link>
-        <Link to="/about">
-          <Button size="lg" variant="outline" className="h-12 px-8 rounded-md border-slate-200 bg-white text-slate-800 hover:bg-slate-50 gap-2 text-base font-semibold transition-all">
+        <Link to="/about" id="link-system-architecture">
+          <Button id="btn-system-architecture" size="lg" variant="outline" className="h-12 px-8 rounded-md border-slate-200 bg-white text-slate-800 hover:bg-slate-50 gap-2 text-base font-semibold transition-all">
             System Architecture
           </Button>
         </Link>
@@ -321,6 +327,6 @@ export default function Index() {
  </div>
  </div>
  </footer>
- </div>
+ </main>
  );
 }

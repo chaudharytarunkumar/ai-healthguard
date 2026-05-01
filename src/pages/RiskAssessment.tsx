@@ -1,4 +1,5 @@
 import { useState, useMemo } from"react";
+import { useSEO } from "@/hooks/useSEO";
 import { useNavigate } from"react-router-dom";
 import { Heart, Info, Sparkles, RotateCcw, ChevronRight, ChevronLeft, ClipboardList, Activity, Beaker } from"lucide-react";
 import { Button } from"@/components/ui/button";
@@ -20,8 +21,13 @@ export default function RiskAssessment() {
  const [formData, setFormData] = useState<Record<string, string>>({});
  const [errors, setErrors] = useState<Record<string, string>>({});
  const [currentSectionIdx, setCurrentSectionIdx] = useState(0);
- const navigate = useNavigate();
- const { toast } = useToast();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
+  useSEO({
+    title: "Clinical Risk Assessment | AiHealth Guard",
+    description: "Input clinical parameters to run the multi-model ischemic heart disease prediction engine for diagnostic insight.",
+  });
 
  const currentSection = sections[currentSectionIdx];
 
@@ -105,7 +111,7 @@ export default function RiskAssessment() {
  const progress = ((currentSectionIdx + 1) / sections.length) * 100;
 
  return (
- <div className="min-h-screen px-6 py-12 bg-background relative overflow-hidden">
+ <main className="min-h-screen px-6 py-12 bg-background relative overflow-hidden" id="main-content">
  {/* Decorative Blur */}
  <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
  <div className="absolute bottom-0 left-0 -z-10 h-[500px] w-[500px] bg-teal-500/5 blur-[120px] rounded-full -translate-x-1/2 translate-y-1/2" />
@@ -256,7 +262,7 @@ export default function RiskAssessment() {
  <p className="mt-12 text-center text-[10px] font-semibold uppercase tracking-[0.3em] text-muted-foreground/50 italic px-4">
  Secure Session &bull; Private Diagnostics &bull; No Persistent Storage
  </p>
- </div>
- </div>
- );
+    </div>
+  </main>
+  );
 }

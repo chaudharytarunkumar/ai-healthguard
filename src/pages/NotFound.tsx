@@ -3,28 +3,34 @@ import { useEffect } from"react";
 import { motion } from"framer-motion";
 import { HeartCrack, ArrowLeft, Home } from"lucide-react";
 import { Button } from"@/components/ui/button";
+import { useSEO } from "@/hooks/useSEO";
 
 const NotFound = () => {
  const location = useLocation();
 
- useEffect(() => {
- console.error("404 Error: User attempted to access non-existent route:", location.pathname);
- }, [location.pathname]);
+  useEffect(() => {
+    console.error("404 Error: User attempted to access non-existent route:", location.pathname);
+  }, [location.pathname]);
 
- return (
- <div className="min-h-screen flex items-center justify-center px-6 py-24 bg-background relative overflow-hidden">
+  useSEO({
+    title: "Page Not Found | AiHealth Guard",
+    description: "The requested clinical diagnostic route could not be found.",
+  });
+
+  return (
+  <main className="min-h-screen flex items-center justify-center px-6 py-24 bg-background relative overflow-hidden" id="main-content">
  {/* Decorative Background */}
  <div className="absolute top-0 right-0 -z-10 h-[600px] w-[600px] bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
  <div className="absolute bottom-0 left-0 -z-10 h-[600px] w-[600px] bg-teal-500/5 blur-[120px] rounded-full -translate-x-1/2 translate-y-1/2" />
  
- <motion.div 
- initial={{ opacity: 0, scale: 0.95 }}
- animate={{ opacity: 1, scale: 1 }}
- transition={{ duration: 0.5 }}
- className="glass-card rounded-[3rem] p-12 md:p-16 text-center max-w-2xl w-full shadow-sm relative z-10"
- >
- <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-[2rem] bg-slate-900 shadow-md relative">
- <div className="absolute -inset-4 rounded-full bg-primary/20" />
+  <motion.div 
+  initial={{ opacity: 0, scale: 0.95 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 0.5 }}
+  className="glass-card rounded-lg p-12 md:p-16 text-center max-w-2xl w-full shadow-sm relative z-10"
+  >
+  <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-lg bg-primary/10 shadow-sm relative">
+  <div className="absolute -inset-4 rounded-full bg-primary/5" />
  <HeartCrack className="h-12 w-12 text-destructive relative z-10" />
  </div>
  
@@ -51,7 +57,7 @@ const NotFound = () => {
  </Button>
  </div>
  </motion.div>
- </div>
+  </main>
  );
 };
 

@@ -1,6 +1,7 @@
 import { Users, BookOpen, GraduationCap, Heart, Award, ShieldCheck } from"lucide-react";
 import logo from"@/assets/logo.png";
 import { motion, AnimatePresence } from"framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 
 const team = [
  { name:"Tarun Kumar", role:"Developer" },
@@ -30,8 +31,13 @@ const itemVariants = {
 };
 
 export default function About() {
- return (
- <div className="min-h-screen px-6 py-16 bg-background relative overflow-hidden">
+  useSEO({
+    title: "About Our Technology | AiHealth Guard",
+    description: "Learn about the scientific foundation, machine learning architecture, and academic research behind AiHealth Guard's cardiovascular prediction engine.",
+  });
+
+  return (
+    <main className="min-h-screen px-6 py-16 bg-background relative overflow-hidden">
  {/* Decorative Elements */}
  <div className="absolute top-0 right-0 -z-10 h-[500px] w-[500px] bg-primary/5 blur-[120px] rounded-full translate-x-1/2 -translate-y-1/2" />
  <div className="absolute bottom-0 left-0 -z-10 h-[500px] w-[500px] bg-teal-500/5 blur-[120px] rounded-full -translate-x-1/2 translate-y-1/2" />
@@ -145,11 +151,10 @@ export default function About() {
  AiHealth Guard is an academic project designed for diagnostic research. It is not a clinical tool. All predictions must be validated by a licensed cardiologist. Professional medical consultation is required for any diagnostic decisions.
  </p>
  </motion.div>
-
- <footer className="mt-16 text-center text-[10px] font-semibold uppercase tracking-[0.5em] text-muted-foreground/30">
- &copy; 2026 AiHealth Guard Project &bull; All Rights Reserved
- </footer>
- </motion.div>
- </div>
- );
+      <footer className="mt-16 text-center text-[10px] font-semibold uppercase tracking-[0.5em] text-muted-foreground/30">
+        &copy; 2026 AiHealth Guard Project &bull; All Rights Reserved
+      </footer>
+    </motion.div>
+  </main>
+  );
 }

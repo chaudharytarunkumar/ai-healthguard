@@ -2,6 +2,7 @@ import { FileText, Download, ExternalLink, BookOpen, Cpu, Sparkles, Files, Info 
 import { Button } from"@/components/ui/button";
 import { Badge } from"@/components/ui/badge";
 import { motion, AnimatePresence } from"framer-motion";
+import { useSEO } from "@/hooks/useSEO";
 
 const containerVariants = {
  hidden: { opacity: 0 },
@@ -17,6 +18,11 @@ const itemVariants = {
 };
 
 export default function Documentation() {
+  useSEO({
+    title: "Clinical Documentation | AiHealth Guard",
+    description: "Access project reports, product requirements, and clinical system documentation for AiHealth Guard.",
+  });
+
  const documents = [
  {
  title:"Project Final Report",
@@ -45,7 +51,7 @@ export default function Documentation() {
 ];
 
  return (
- <div className="min-h-screen px-6 py-16 bg-background relative overflow-hidden">
+  <main className="min-h-screen px-6 py-16 bg-background relative overflow-hidden" id="main-content">
  {/* Decorative Elements */}
  <div className="absolute top-0 right-0 -z-10 h-[600px] w-[600px] bg-primary/5 blur-[160px] rounded-full translate-x-1/2 -translate-y-1/2" />
  <div className="absolute bottom-0 left-0 -z-10 h-[600px] w-[600px] bg-emerald-500/5 blur-[160px] rounded-full -translate-x-1/2 translate-y-1/2" />
@@ -155,6 +161,6 @@ export default function Documentation() {
  &copy; 2026 AiHealth Guard Repository &bull; Institutional Access Only
  </footer>
  </motion.div>
- </div>
+ </main>
  );
 }
