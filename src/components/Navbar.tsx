@@ -3,6 +3,7 @@ import { Menu, X } from"lucide-react";
 import { useState } from"react";
 import logo from"@/assets/logo.png";
 import { motion, AnimatePresence } from"framer-motion";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navItems = [
  { label:"Home", path:"/" },
@@ -30,46 +31,52 @@ export function Navbar() {
  </Link>
 
  {/* Desktop */}
- <div className="hidden items-center gap-1 md:flex">
- {navItems.map((item) => (
- <Link
- key={item.path}
- to={item.path}
- className={`relative rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${location.pathname === item.path
- ?"text-primary"
- :"text-muted-foreground hover:text-foreground"
- }`}
- >
- {location.pathname === item.path && (
- <motion.div
- layoutId="nav-active"
- className="absolute inset-0 rounded-xl bg-primary/10"
- transition={{ type:"spring", bounce: 0.2, duration: 0.6 }}
- />
- )}
- <span className="relative z-10">{item.label}</span>
- </Link>
- ))}
- </div>
+      <div className="hidden items-center gap-1 md:flex">
+        {navItems.map((item) => (
+          <Link
+            key={item.path}
+            to={item.path}
+            className={`relative rounded-xl px-5 py-2.5 text-sm font-bold transition-all ${location.pathname === item.path
+              ?"text-primary"
+              :"text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {location.pathname === item.path && (
+              <motion.div
+                layoutId="nav-active"
+                className="absolute inset-0 rounded-xl bg-primary/10"
+                transition={{ type:"spring", bounce: 0.2, duration: 0.6 }}
+              />
+            )}
+            <span className="relative z-10">{item.label}</span>
+          </Link>
+        ))}
+        <div className="ml-4 border-l border-primary/10 pl-4">
+          <ThemeToggle />
+        </div>
+      </div>
 
- {/* Mobile toggle */}
- <button 
- className="rounded-full p-2 transition-colors hover:bg-muted md:hidden" 
- onClick={() => setMobileOpen(!mobileOpen)}
- >
- <AnimatePresence mode="wait">
- <motion.div
- key={mobileOpen ?"close" :"menu"}
- initial={{ opacity: 0, rotate: -90 }}
- animate={{ opacity: 1, rotate: 0 }}
- exit={{ opacity: 0, rotate: 90 }}
- transition={{ duration: 0.2 }}
- >
- {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
- </motion.div>
- </AnimatePresence>
- </button>
- </div>
+      {/* Mobile toggle */}
+      <div className="flex items-center gap-4 md:hidden">
+        <ThemeToggle />
+        <button 
+          className="rounded-full p-2 transition-colors hover:bg-muted" 
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={mobileOpen ?"close" :"menu"}
+              initial={{ opacity: 0, rotate: -90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: 90 }}
+              transition={{ duration: 0.2 }}
+            >
+              {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </motion.div>
+          </AnimatePresence>
+        </button>
+      </div>
+    </div>
 
  {/* Mobile menu */}
  <AnimatePresence>

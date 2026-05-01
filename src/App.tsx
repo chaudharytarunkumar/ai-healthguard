@@ -4,14 +4,29 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Navbar } from "@/components/Navbar";
-import Index from "./pages/Index";
-import RiskAssessment from "./pages/RiskAssessment";
-import Results from "./pages/Results";
-import ModelComparison from "./pages/ModelComparison";
-import Documentation from "./pages/Documentation";
-import About from "./pages/About";
-import NotFound from "./pages/NotFound";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { Suspense, lazy } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
+
+// Lazy-loaded pages for Code Splitting (Performance)
+const Index = lazy(() => import("./pages/Index"));
+const RiskAssessment = lazy(() => import("./pages/RiskAssessment"));
+const Results = lazy(() => import("./pages/Results"));
+const ModelComparison = lazy(() => import("./pages/ModelComparison"));
+const Documentation = lazy(() => import("./pages/Documentation"));
+const About = lazy(() => import("./pages/About"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Suspense Fallback
+const PageLoader = () => (
+  <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+    <Loader2 className="h-8 w-8 animate-spin text-primary opacity-50" />
+    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mt-4 opacity-50">
+      Loading Interface
+    </p>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -30,29 +45,33 @@ const AnimatedRoutes = () => {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
-        <Route path="/assess" element={<PageWrapper><RiskAssessment /></PageWrapper>} />
-        <Route path="/results" element={<PageWrapper><Results /></PageWrapper>} />
-        <Route path="/models" element={<PageWrapper><ModelComparison /></PageWrapper>} />
-        <Route path="/documentation" element={<PageWrapper><Documentation /></PageWrapper>} />
-        <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
-        <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageWrapper><Index /></PageWrapper>} />
+          <Route path="/assess" element={<PageWrapper><RiskAssessment /></PageWrapper>} />
+          <Route path="/results" element={<PageWrapper><Results /></PageWrapper>} />
+          <Route path="/models" element={<PageWrapper><ModelComparison /></PageWrapper>} />
+          <Route path="/documentation" element={<PageWrapper><Documentation /></PageWrapper>} />
+          <Route path="/about" element={<PageWrapper><About /></PageWrapper>} />
+          <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
+        </Routes>
+      </Suspense>
     </AnimatePresence>
   );
 };
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Navbar />
-        <AnimatedRoutes />
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Navbar />
+          <AnimatedRoutes />
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 

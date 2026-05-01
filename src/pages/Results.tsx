@@ -452,6 +452,42 @@ export default function Results() {
  }
  };
 
+ const handleDownloadCSV = () => {
+   if (!patientData || !apiData) {
+     toast({ title: "Export Failed", description: "No clinical data available for export.", variant: "destructive" });
+     return;
+   }
+
+   try {
+     const headers = ["Parameter", "Value", "Unit"];
+     const rows = [
+       ...Object.entries(patientData).map(([key, value]) => [key, value, ""]),
+       ["---", "---", "---"],
+       ["Model", "Prediction Probability", ""],
+       ["XGBoost (Primary)", `${apiData.probabilities?.XGB || 0}%`, ""],
+       ["Random Forest", `${apiData.probabilities?.RF || 0}%`, ""],
+       ["SVM", `${apiData.probabilities?.SVM || 0}%`, ""],
+       ["Neural Network", `${apiData.probabilities?.NN || 0}%`, ""]
+     ];
+
+     const csvContent = "data:text/csv;charset=utf-8," + 
+       headers.join(",") + "\\n" + 
+       rows.map(e => e.join(",")).join("\\n");
+
+     const encodedUri = encodeURI(csvContent);
+     const link = document.createElement("a");
+     link.setAttribute("href", encodedUri);
+     link.setAttribute("download", `AiHealthGuard_Clinical_Export_${Math.random().toString(36).substring(7).toUpperCase()}.csv`);
+     document.body.appendChild(link);
+     link.click();
+     document.body.removeChild(link);
+
+     toast({ title: "CSV Exported", description: "Clinical data successfully exported as CSV." });
+   } catch (error) {
+     toast({ title: "Export Failed", description: "Encountered an error during CSV generation.", variant: "destructive" });
+   }
+ };
+
  const { data: apiData, isLoading, error } = useQuery({
  queryKey: ["predict", patientData],
  queryFn: async () => {
@@ -565,6 +601,14 @@ export default function Results() {
  <Download className="h-6 w-6" />
  )}
  {isGeneratingPDF ?"Compiling Report..." :"Export Full Dossier"}
+ </Button>
+ <Button 
+   variant="outline" 
+   className="h-11 px-6 rounded-[1.5rem] border-2 font-semibold gap-3 transition-all hover:bg-muted shadow-md bg-white" 
+   onClick={handleDownloadCSV}
+ >
+   <Activity className="h-6 w-6 text-primary" />
+   Export Clinical Data (CSV)
  </Button>
  <Link to="/assess">
  <Button className="h-11 px-6 rounded-[1.5rem] bg-gradient-primary text-white font-semibold gap-3 transition-all shadow-md shadow-primary/40">
